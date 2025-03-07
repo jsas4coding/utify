@@ -1,0 +1,84 @@
+name: Bug Report
+description: Report an issue with the project.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the following details so we can help resolve the issue faster.
+  - type: input
+    id: title
+    attributes:
+      label: Bug Title
+      description: Provide a brief title describing the issue.
+      placeholder: "Something isn't working..."
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Provide a clear and concise description of the issue.
+      placeholder: "Explain what the bug is and how to reproduce it."
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: What OS are you using?
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: go_version
+    attributes:
+      label: Go Version
+      description: What version of Go are you using? (Check with `go version`)
+      placeholder: "e.g., go1.20"
+    validations:
+      required: true
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: List the steps needed to reproduce the bug.
+      placeholder: "1. Run command `...`\n2. Do this\n3. See the issue"
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "The program should..."
+    validations:
+      required: true
+  - type: textarea
+    id: actual_behavior
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "Instead, it..."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs & Console Output
+      description: Provide any logs, errors, or screenshots if applicable.
+      render: shell
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      description: Please confirm that you've done the following before submitting.
+      options:
+        - label: I have searched for existing issues and found none that match my problem.
+          required: true
+        - label: I have provided all necessary information to reproduce the bug.
+          required: true
