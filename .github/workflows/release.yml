@@ -1,4 +1,10 @@
 name: Unify Release Build
+uses: softprops/action-gh-release@v2
+with:
+  files: bin/*
+  fail_on_unmatched_files: true
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 on:
   release:
 jobs:
