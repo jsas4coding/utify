@@ -1,4 +1,4 @@
-name: Utify Release Build
+name: Unify Release Build
 on:
   release:
 jobs:
@@ -22,11 +22,12 @@ jobs:
       - name: Build binary
         run: |
           mkdir -p bin
-          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o bin/utify-${{ env.VERSION }}-${{ matrix.os }}-${{ matrix.arch }} -ldflags "-s -w" .
+          OUTPUT_NAME=utify-${{ env.VERSION }}-${{ matrix.os }}-${{ matrix.arch }}
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o bin/$OUTPUT_NAME -ldflags "-s -w" .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: utify-binaries
+          name: utify-binaries-${{ matrix.os }}-${{ matrix.arch }}
           path: bin/*
   release:
     name: Create GitHub Release
@@ -38,7 +39,8 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: utify-binaries
+          pattern: utify-binaries-*
+          merge-multiple: true
           path: bin/
       - name: Publish Release
         uses: softprops/action-gh-release@v2
