@@ -3,7 +3,7 @@
 ![Go Version](https://img.shields.io/github/go-mod/go-version/jonatas-sas/utify)
 ![Stable Version](https://img.shields.io/github/v/release/jonatas-sas/utify)
 ![License](https://img.shields.io/github/license/jonatas-sas/utify)
-![Tests](https://github.com/jonatas-sas/utify/actions/workflows/test.yml/badge.svg)
+![Tests](https://github.com/jonatas-sas/utify/actions/workflows/ci.yml/badge.svg)
 ![Code Coverage](https://img.shields.io/codecov/c/github/jonatas-sas/utify)
 ![Stars](https://img.shields.io/github/stars/jonatas-sas/utify?style=social)
 
