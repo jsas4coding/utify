@@ -1,24 +1,25 @@
 # Utify
 
 ![Go Version](https://img.shields.io/github/go-mod/go-version/jonatas-sas/utify)
+![Stable Version](https://img.shields.io/github/v/release/jonatas-sas/utify)
 ![License](https://img.shields.io/github/license/jonatas-sas/utify)
-![Tests](https://github.com/jonatas-sas/utify/actions/workflows/ci.yml/badge.svg)
+![Tests](https://github.com/jonatas-sas/utify/actions/workflows/test.yml/badge.svg)
 ![Code Coverage](https://img.shields.io/codecov/c/github/jonatas-sas/utify)
 ![Stars](https://img.shields.io/github/stars/jonatas-sas/utify?style=social)
 
-Utify é uma biblioteca Go para exibir mensagens estilizadas no terminal com suporte a cores, ícones e formatação avançada.
+Utify is a Go library for displaying styled messages in the terminal with support for colors, icons, and advanced formatting.
 
-## Instalação
+## Installation
 
-Para instalar o `utify`, utilize o comando:
+To install `utify`, use the following command:
 
 ```sh
 go get github.com/jonatas-sas/utify
 ```
 
-## Uso
+## Usage
 
-Exemplo básico de uso:
+Basic example:
 
 ```go
 package main
@@ -28,85 +29,85 @@ import (
 )
 
 func main() {
-	utify.Success("Operação concluída com sucesso!", utify.Options{})
-	utify.Error("Ocorreu um erro inesperado.", utify.Options{})
-	utify.Warning("Isso pode causar problemas.", utify.Options{})
-	utify.Info("Informação útil.", utify.Options{})
-	utify.Debug("Depuração ativada.", utify.Options{})
-	utify.Critical("Erro crítico!", utify.Options{})
+	utify.Success("Operation completed successfully!", utify.Options{})
+	utify.Error("An unexpected error occurred.", utify.Options{})
+	utify.Warning("This might cause issues.", utify.Options{})
+	utify.Info("Useful information.", utify.Options{})
+	utify.Debug("Debugging enabled.", utify.Options{})
+	utify.Critical("Critical error!", utify.Options{})
 }
 ```
 
-## Opções de Estilização
+## Styling Options
 
-O `utify` permite configurar mensagens com opções avançadas:
+`utify` allows configuring messages with advanced options:
 
-| Opção     | Descrição                       |
-| --------- | ------------------------------- |
-| `Bold`    | Exibe o texto em negrito        |
-| `Italic`  | Exibe o texto em itálico        |
-| `NoColor` | Remove cores da saída           |
-| `NoIcon`  | Remove ícones das mensagens     |
-| `Exit`    | Finaliza a execução após exibir |
+| Option    | Description                        |
+| --------- | ---------------------------------- |
+| `Bold`    | Displays text in bold              |
+| `Italic`  | Displays text in italics           |
+| `NoColor` | Removes colors from the output     |
+| `NoIcon`  | Removes icons from messages        |
+| `Exit`    | Terminates execution after display |
 
-Exemplo de uso com opções:
-
-```go
-utify.Success("Mensagem em negrito", utify.Options{Bold: true})
-utify.Error("Mensagem sem cor", utify.Options{NoColor: true})
-```
-
-## Métodos Disponíveis
-
-O `utify` fornece os seguintes métodos para exibir mensagens estilizadas:
-
-### **Mensagens de Status Geral**
-
-- `Success(text string, opts Options)` → Mensagem de sucesso
-- `Error(text string, opts Options)` → Mensagem de erro
-- `Warning(text string, opts Options)` → Aviso ao usuário
-- `Info(text string, opts Options)` → Informação útil
-- `Debug(text string, opts Options)` → Mensagem de depuração
-- `Critical(text string, opts Options)` → Erro crítico
-
-### **Ações Comuns**
-
-- `Delete(text string, opts Options)` → Remoção de itens
-- `Update(text string, opts Options)` → Atualização de dados
-- `Install(text string, opts Options)` → Instalação de pacotes
-- `Upgrade(text string, opts Options)` → Atualização de versões
-- `Edit(text string, opts Options)` → Modificação de itens
-- `New(text string, opts Options)` → Criação de novos itens
-
-### **Operações Específicas**
-
-- `Download(text string, opts Options)` → Indica um processo de download
-- `Upload(text string, opts Options)` → Indica um processo de upload
-- `Sync(text string, opts Options)` → Indica sincronização de dados
-- `Search(text string, opts Options)` → Indica busca ou pesquisa
-
-## Uso com `Echo`
-
-Todas as funções acima utilizam internamente o método `Echo`. Caso precise personalizar a exibição, pode chamá-lo diretamente:
+Example using options:
 
 ```go
-utify.Echo(utify.MessageSuccess, "Mensagem customizada", utify.Options{Bold: true, NoIcon: true})
+utify.Success("Bold message", utify.Options{Bold: true})
+utify.Error("Message without color", utify.Options{NoColor: true})
 ```
 
-## Testes
+## Available Methods
 
-Para rodar os testes, utilize o comando:
+`utify` provides the following methods to display styled messages:
+
+### **General Status Messages**
+
+- `Success(text string, opts Options)` → Success message
+- `Error(text string, opts Options)` → Error message
+- `Warning(text string, opts Options)` → Warning message
+- `Info(text string, opts Options)` → Informational message
+- `Debug(text string, opts Options)` → Debugging message
+- `Critical(text string, opts Options)` → Critical error
+
+### **Common Actions**
+
+- `Delete(text string, opts Options)` → Item deletion
+- `Update(text string, opts Options)` → Data update
+- `Install(text string, opts Options)` → Package installation
+- `Upgrade(text string, opts Options)` → Version upgrade
+- `Edit(text string, opts Options)` → Item modification
+- `New(text string, opts Options)` → Creation of new items
+
+### **Specific Operations**
+
+- `Download(text string, opts Options)` → Indicates a download process
+- `Upload(text string, opts Options)` → Indicates an upload process
+- `Sync(text string, opts Options)` → Indicates data synchronization
+- `Search(text string, opts Options)` → Indicates a search operation
+
+## Using `Echo`
+
+All the functions above internally use the `Echo` method. If you need to customize the output, you can call it directly:
+
+```go
+utify.Echo(utify.MessageSuccess, "Custom message", utify.Options{Bold: true, NoIcon: true})
+```
+
+## Running Tests
+
+To run the tests, use the following command:
 
 ```sh
 go test -v
 ```
 
-Os testes verificam a saída das mensagens e opções, garantindo que a formatação funcione corretamente.
+The tests verify message output and options to ensure formatting works correctly.
 
-## Contribuição
+## Contribution
 
-Contribuições são bem-vindas! Para sugerir melhorias, abra uma issue ou envie um pull request.
+Contributions are welcome! To suggest improvements, open an issue or submit a pull request.
 
-## Licença
+## License
 
-Este projeto está licenciado sob a licença MIT.
+This project is licensed under the MIT license.
