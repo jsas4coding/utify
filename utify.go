@@ -134,28 +134,21 @@ func Echo(msgType MessageType, text string, opts Options) {
 	}
 }
 
-func Success(text string, opts Options)    { Echo(MessageSuccess, text, opts) }
-func Error(text string, opts Options)      { Echo(MessageError, text, opts) }
-func Warning(text string, opts Options)    { Echo(MessageWarning, text, opts) }
-func Info(text string, opts Options)       { Echo(MessageInfo, text, opts) }
-func Debug(text string, opts Options)      { Echo(MessageDebug, text, opts) }
-func Search(text string, opts Options)     { Echo(MessageSearch, text, opts) }
-func Sync(text string, opts Options)       { Echo(MessageSync, text, opts) }
-func Download(text string, opts Options)   { Echo(MessageDownload, text, opts) }
-func Refresh(text string, opts Options)    { Echo(MessageRefresh, text, opts) }
-func Upload(text string, opts Options)     { Echo(MessageUpload, text, opts) }
-func Delete(text string, opts Options)     { Echo(MessageDelete, text, opts) }
-func Critical(text string, opts Options)   { Echo(MessageCritical, text, opts) }
-func Git(text string, opts Options)        { Echo(MessageGit, text, opts) }
-func New(text string, opts Options)        { Echo(MessageNew, text, opts) }
-func Edit(text string, opts Options)       { Echo(MessageEdit, text, opts) }
-func Update(text string, opts Options)     { Echo(MessageUpdate, text, opts) }
-func Generation(text string, opts Options) { Echo(MessageGeneration, text, opts) }
-func Find(text string, opts Options)       { Echo(MessageFind, text, opts) }
-func Link(text string, opts Options)       { Echo(MessageLink, text, opts) }
-func Unlink(text string, opts Options)     { Echo(MessageUnlink, text, opts) }
-func Upgrade(text string, opts Options)    { Echo(MessageUpgrade, text, opts) }
-func Install(text string, opts Options)    { Echo(MessageInstall, text, opts) }
-func Font(text string, opts Options)       { Echo(MessageFont, text, opts) }
-func Theme(text string, opts Options)      { Echo(MessageTheme, text, opts) }
-func Icon(text string, opts Options)       { Echo(MessageIcon, text, opts) }
+func Success(text string, opts Options)  { Echo(MessageSuccess, text, opts) }
+func Error(text string, opts Options)    { Echo(MessageError, text, opts) }
+func Warning(text string, opts Options)  { Echo(MessageWarning, text, opts) }
+func Info(text string, opts Options)     { Echo(MessageInfo, text, opts) }
+func Debug(text string, opts Options)    { Echo(MessageDebug, text, opts) }
+func Critical(text string, opts Options) { Echo(MessageCritical, text, opts) }
+
+func Delete(text string, opts Options)  { Echo(MessageDelete, text, opts) }
+func Update(text string, opts Options)  { Echo(MessageUpdate, text, opts) }
+func Install(text string, opts Options) { Echo(MessageInstall, text, opts) }
+func Upgrade(text string, opts Options) { Echo(MessageUpgrade, text, opts) }
+func Edit(text string, opts Options)    { Echo(MessageEdit, text, opts) }
+func New(text string, opts Options)     { Echo(MessageNew, text, opts) }
+
+func Download(text string, opts Options) { Echo(MessageDownload, text, opts) }
+func Upload(text string, opts Options)   { Echo(MessageUpload, text, opts) }
+func Sync(text string, opts Options)     { Echo(MessageSync, text, opts) }
+func Search(text string, opts Options)   { Echo(MessageSearch, text, opts) }
