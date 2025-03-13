@@ -1,118 +1,112 @@
 # Utify
 
-![Build Status](https://github.com/jonatas-sas/utify/actions/workflows/ci_tests.yml/badge.svg)
-![Release](https://github.com/jonatas-sas/utify/actions/workflows/ci_release.yml/badge.svg)
-![Coverage](https://codecov.io/gh/jonatas-sas/utify/branch/main/graph/badge.svg)
+![Go Version](https://img.shields.io/github/go-mod/go-version/jonatas-sas/utify)
+![License](https://img.shields.io/github/license/jonatas-sas/utify)
+![Tests](https://github.com/jonatas-sas/utify/actions/workflows/test.yml/badge.svg)
+![Code Coverage](https://img.shields.io/codecov/c/github/jonatas-sas/utify)
+![Stars](https://img.shields.io/github/stars/jonatas-sas/utify?style=social)
 
-Utify is a Go library for displaying styled and colorized messages in the terminal, with support for icons and flexible configurations.
+Utify é uma biblioteca Go para exibir mensagens estilizadas no terminal com suporte a cores, ícones e formatação avançada.
 
-## 🚀 Installation
+## Instalação
 
-To install Utify, run:
+Para instalar o `utify`, utilize o comando:
 
 ```sh
 go get github.com/jonatas-sas/utify
 ```
 
-## ✨ Basic Usage
+## Uso
+
+Exemplo básico de uso:
 
 ```go
 package main
 
 import (
-    "github.com/jonatas-sas/utify"
+	"github.com/jonatas-sas/utify"
 )
 
 func main() {
-    utify.Success("Operation completed successfully", utify.Options{})
-    utify.Warning("This is a warning", utify.Options{Bold: true})
+	utify.Success("Operação concluída com sucesso!", utify.Options{})
+	utify.Error("Ocorreu um erro inesperado.", utify.Options{})
+	utify.Warning("Isso pode causar problemas.", utify.Options{})
+	utify.Info("Informação útil.", utify.Options{})
+	utify.Debug("Depuração ativada.", utify.Options{})
+	utify.Critical("Erro crítico!", utify.Options{})
 }
 ```
 
-## ⚙️ Available Options
+## Opções de Estilização
 
-The `Options` struct allows customization of the message appearance:
+O `utify` permite configurar mensagens com opções avançadas:
 
-| Option    | Type   | Description                                         |
-| --------- | ------ | --------------------------------------------------- |
-| `Bold`    | `bool` | Displays the message in bold.                       |
-| `Italic`  | `bool` | Displays the message in italic.                     |
-| `NoColor` | `bool` | Disables color output.                              |
-| `NoIcon`  | `bool` | Removes the associated icon from the message.       |
-| `Exit`    | `bool` | Exits the application after displaying the message. |
+| Opção     | Descrição                       |
+| --------- | ------------------------------- |
+| `Bold`    | Exibe o texto em negrito        |
+| `Italic`  | Exibe o texto em itálico        |
+| `NoColor` | Remove cores da saída           |
+| `NoIcon`  | Remove ícones das mensagens     |
+| `Exit`    | Finaliza a execução após exibir |
 
-## 🖌 Message Types
-
-Utify provides predefined message types, each with an associated color and icon:
+Exemplo de uso com opções:
 
 ```go
-utify.Success("Success message", utify.Options{})
-utify.Error("Error message", utify.Options{})
-utify.Warning("Warning message", utify.Options{})
-utify.Info("Info message", utify.Options{})
-utify.Debug("Debug message", utify.Options{})
-utify.Search("Search message", utify.Options{})
-utify.Sync("Sync message", utify.Options{})
-utify.Download("Download message", utify.Options{})
-utify.Refresh("Refresh message", utify.Options{})
-utify.Upload("Upload message", utify.Options{})
-utify.Delete("Delete message", utify.Options{})
-utify.Critical("Critical message", utify.Options{})
-utify.Git("Git message", utify.Options{})
-utify.New("New message", utify.Options{})
-utify.Edit("Edit message", utify.Options{})
-utify.Update("Update message", utify.Options{})
-utify.Generation("Generation message", utify.Options{})
-utify.Find("Find message", utify.Options{})
-utify.Link("Link message", utify.Options{})
-utify.Unlink("Unlink message", utify.Options{})
-utify.Upgrade("Upgrade message", utify.Options{})
-utify.Install("Install message", utify.Options{})
-utify.Font("Font message", utify.Options{})
-utify.Theme("Theme message", utify.Options{})
-utify.Icon("Icon message", utify.Options{})
+utify.Success("Mensagem em negrito", utify.Options{Bold: true})
+utify.Error("Mensagem sem cor", utify.Options{NoColor: true})
 ```
 
-## 🧪 Running Tests
+## Métodos Disponíveis
 
-To execute the test suite:
+O `utify` fornece os seguintes métodos para exibir mensagens estilizadas:
 
-```sh
-make test
-```
+### **Mensagens de Status Geral**
 
-To check test coverage:
+- `Success(text string, opts Options)` → Mensagem de sucesso
+- `Error(text string, opts Options)` → Mensagem de erro
+- `Warning(text string, opts Options)` → Aviso ao usuário
+- `Info(text string, opts Options)` → Informação útil
+- `Debug(text string, opts Options)` → Mensagem de depuração
+- `Critical(text string, opts Options)` → Erro crítico
 
-```sh
-make coverage
-```
+### **Ações Comuns**
 
-## 🔍 Linting
+- `Delete(text string, opts Options)` → Remoção de itens
+- `Update(text string, opts Options)` → Atualização de dados
+- `Install(text string, opts Options)` → Instalação de pacotes
+- `Upgrade(text string, opts Options)` → Atualização de versões
+- `Edit(text string, opts Options)` → Modificação de itens
+- `New(text string, opts Options)` → Criação de novos itens
 
-To run the linter:
+### **Operações Específicas**
 
-```sh
-make lint
-```
+- `Download(text string, opts Options)` → Indica um processo de download
+- `Upload(text string, opts Options)` → Indica um processo de upload
+- `Sync(text string, opts Options)` → Indica sincronização de dados
+- `Search(text string, opts Options)` → Indica busca ou pesquisa
 
-## 🛠 Customizing Colors
+## Uso com `Echo`
 
-Users can override default colors using `SetColorTable`:
+Todas as funções acima utilizam internamente o método `Echo`. Caso precise personalizar a exibição, pode chamá-lo diretamente:
 
 ```go
-utify.SetColorTable(map[string]string{
-    "success": "\033[35m", // Magenta for success messages
-})
+utify.Echo(utify.MessageSuccess, "Mensagem customizada", utify.Options{Bold: true, NoIcon: true})
 ```
 
-## 📌 Contributing
+## Testes
 
-1. Fork the repository.
-2. Create a branch for your feature/fix: `git checkout -b my-feature`
-3. Commit your changes: `git commit -m 'My new feature'`
-4. Push your branch: `git push origin my-feature`
-5. Open a Pull Request 🚀
+Para rodar os testes, utilize o comando:
 
-## 📜 License
+```sh
+go test -v
+```
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+Os testes verificam a saída das mensagens e opções, garantindo que a formatação funcione corretamente.
+
+## Contribuição
+
+Contribuições são bem-vindas! Para sugerir melhorias, abra uma issue ou envie um pull request.
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT.
