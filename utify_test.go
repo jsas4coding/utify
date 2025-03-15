@@ -2,6 +2,7 @@ package utify
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 )
@@ -16,7 +17,10 @@ func captureOutput(f func()) string {
 
 	w.Close()
 	os.Stdout = old
-	buf.ReadFrom(r)
+	_, err := buf.ReadFrom(r)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to read from buffer: %v\n", err)
+	}
 	return buf.String()
 }
 
