@@ -43,6 +43,11 @@ jobs:
         run: |
           LINTER_VERSION=v1.55.2
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@$LINTER_VERSION
+      - name: Tidy Go Modules
+        run: go mod tidy
       - name: Run linters
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then go vet ./...; else make lint; fi
+          case "$RUNNER_OS" in
+            Windows) go vet ./... ;;
+            *) make lint ;;
+          esac
