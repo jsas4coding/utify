@@ -1,34 +1,52 @@
-# Description
+# Pull Request Template
 
-Please include a summary of the change and which issue is fixed. Please also
-include relevant motivation and context
+## 📌 Description
 
-Fixes # (issue)
+Please include a summary of the change and which issue is fixed. Additionally, provide relevant motivation and context for this change.
 
-## Type of change
+**Fixes:** # (issue)
 
-Please delete options that are not relevant.
+---
 
-- Bug fix (non-breaking change which fixes an issue)
-- New feature (non-breaking change which adds functionality)
-- Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- This change requires a documentation update
+## 🔄 Type of Change
 
-# How Has This Been Tested?
+Select the type of change this PR introduces:
 
-Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list relevant details about your configuration
+- [ ] 🐞 **Bug fix** (non-breaking change which fixes an issue)
+- [ ] ✨ **New feature** (non-breaking change which adds functionality)
+- [ ] 💥 **Breaking change** (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 📖 **Documentation update** (changes that require updates to the README, annotations, or other documentation)
+- [ ] 🏗️ **Refactor** (code improvement without adding new features or fixing a bug)
+- [ ] 🧪 **Testing** (adding or improving tests)
 
-- [ ] Test A
-- [ ] Test B
+---
 
-**Configuration**:
+## ✅ How Has This Been Tested?
 
-- Neovim version (nvim --version):
-- Operating system and version:
+Please describe the tests that were run to verify your changes. Provide steps to reproduce, and list relevant details about your testing setup.
 
-# Checklist:
+### 🔹 Tests Performed:
 
-- [ ] My code follows the style guidelines of this project (stylua)
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation (lua annotations)
+- [ ] Unit Tests (`go test -v`)
+- [ ] Integration Tests
+- [ ] Manual Testing
+- [ ] Linter (`golangci-lint run`)
+
+### 🔹 Test Configuration:
+
+- **Go version (`go version`)**:
+- **Operating system and version**:
+
+---
+
+## 📋 Checklist
+
+- [ ] ✅ My code follows the style guidelines of this project (`gofmt`, `golangci-lint`).
+- [ ] 🔍 I have performed a **self-review** of my own code.
+- [ ] 📝 I have added **comments** where necessary to improve readability.
+- [ ] 📚 I have updated **documentation** (README, GoDoc annotations, or relevant sections).
+- [ ] 🛠️ My changes have been tested and verified (`go test -v`).
+
+---
+
+Thank you for contributing! 🚀

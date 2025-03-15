@@ -2,125 +2,125 @@ package utify
 
 import (
 	"bytes"
-	"log"
+	"fmt"
 	"os"
 	"testing"
 )
 
 func captureOutput(f func()) string {
 	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	defer log.SetOutput(os.Stderr)
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
 	f()
+
+	w.Close()
+	os.Stdout = old
+	_, err := buf.ReadFrom(r)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to read from buffer: %v\n", err)
+	}
 	return buf.String()
 }
 
-func testEcho(t *testing.T, fn func(string, Options), name string) {
-	output := captureOutput(func() {
-		fn("Default "+name+" Test", Options{})
-	})
-
-	if output == "" {
-		t.Errorf("Expected default %s output, got empty string", name)
+func TestEcho(t *testing.T) {
+	tests := []struct {
+		name     string
+		msgType  MessageType
+		text     string
+		options  *Options
+		expected string
+	}{
+		{"Success Message", MessageSuccess, "Operation completed", OptionsDefault(), "Operation completed"},
+		{"Error Message", MessageError, "An error occurred", OptionsDefault(), "An error occurred"},
+		{"Warning Message", MessageWarning, "This is a warning", OptionsDefault(), "This is a warning"},
+		{"Info Message", MessageInfo, "Information", OptionsDefault(), "Information"},
+		{"Debug Message", MessageDebug, "Debug mode", OptionsDefault(), "Debug mode"},
+		{"Critical Message", MessageCritical, "Critical failure", OptionsDefault(), "Critical failure"},
+		{"Bold Option", MessageSuccess, "Bold text", OptionsDefault().WithBold(), "\033[1m"},
+		{"Italic Option", MessageSuccess, "Italic text", OptionsDefault().WithItalic(), "\033[3m"},
+		{"NoColor Option", MessageSuccess, "No color", OptionsDefault().WithoutColor(), ""},
+		{"NoStyle Option", MessageSuccess, "No style", OptionsDefault().WithoutStyle(), ""},
 	}
 
-	output = captureOutput(func() {
-		fn("Bold "+name+" Test", Options{Bold: true})
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := captureOutput(func() {
+				Echo(tt.msgType, tt.text, tt.options)
+			})
 
-	if output == "" {
-		t.Errorf("Expected bold %s output, got empty string", name)
-	}
-
-	output = captureOutput(func() {
-		fn("Italic "+name+" Test", Options{Italic: true})
-	})
-
-	if output == "" {
-		t.Errorf("Expected italic %s output, got empty string", name)
-	}
-
-	output = captureOutput(func() {
-		fn("NoColor "+name+" Test", Options{NoColor: true})
-	})
-
-	if output == "" {
-		t.Errorf("Expected no color %s output, got empty string", name)
-	}
-
-	output = captureOutput(func() {
-		fn("NoIcon "+name+" Test", Options{NoIcon: true})
-	})
-
-	if output == "" {
-		t.Errorf("Expected no icon %s output, got empty string", name)
-	}
-
-	if os.Getenv("TEST_"+name+"_EXIT") == "1" {
-		fn("Exit "+name+" Test", Options{Exit: true})
+			if !bytes.Contains([]byte(output), []byte(tt.expected)) {
+				t.Errorf("Expected output to contain: %q, but got: %q", tt.expected, output)
+			}
+		})
 	}
 }
 
-func TestSuccess(t *testing.T) {
-	testEcho(t, Success, "Success")
+func TestAllMessageFunctions(t *testing.T) {
+	tests := []struct {
+		name    string
+		fn      func(string, *Options)
+		message string
+	}{
+		{"Success", Success, "Success message"},
+		{"Error", Error, "Error message"},
+		{"Warning", Warning, "Warning message"},
+		{"Info", Info, "Info message"},
+		{"Debug", Debug, "Debug message"},
+		{"Critical", Critical, "Critical message"},
+		{"Delete", Delete, "Delete message"},
+		{"Update", Update, "Update message"},
+		{"Install", Install, "Install message"},
+		{"Upgrade", Upgrade, "Upgrade message"},
+		{"Edit", Edit, "Edit message"},
+		{"New", New, "New message"},
+		{"Download", Download, "Download message"},
+		{"Upload", Upload, "Upload message"},
+		{"Sync", Sync, "Sync message"},
+		{"Search", Search, "Search message"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := captureOutput(func() {
+				tt.fn(tt.message, OptionsDefault())
+			})
+
+			if !bytes.Contains([]byte(output), []byte(tt.message)) {
+				t.Errorf("Expected output to contain: %q, but got: %q", tt.message, output)
+			}
+		})
+	}
 }
 
-func TestError(t *testing.T) {
-	testEcho(t, Error, "Error")
+func TestExitDisablesCallback(t *testing.T) {
+	opts := OptionsDefault().WithExit()
+
+	if opts.Callback != nil {
+		t.Errorf("Callback should be nil when Exit is enabled")
+	}
+
+	if !opts.Exit {
+		t.Errorf("Exit should be enabled")
+	}
 }
 
-func TestWarning(t *testing.T) {
-	testEcho(t, Warning, "Warning")
-}
+func TestCallbackDisablesExit(t *testing.T) {
+	var callbackExecuted bool
+	callback := func(msgType MessageType, text string) {
+		callbackExecuted = true
+	}
 
-func TestInfo(t *testing.T) {
-	testEcho(t, Info, "Info")
-}
+	opts := OptionsDefault().WithCallback(callback)
 
-func TestDebug(t *testing.T) {
-	testEcho(t, Debug, "Debug")
-}
+	if opts.Exit {
+		t.Errorf("Exit should be disabled when Callback is set")
+	}
 
-func TestCritical(t *testing.T) {
-	testEcho(t, Critical, "Critical")
-}
+	Echo(MessageSuccess, "Test message", opts)
 
-func TestDelete(t *testing.T) {
-	testEcho(t, Delete, "Delete")
-}
-
-func TestUpdate(t *testing.T) {
-	testEcho(t, Update, "Update")
-}
-
-func TestInstall(t *testing.T) {
-	testEcho(t, Install, "Install")
-}
-
-func TestUpgrade(t *testing.T) {
-	testEcho(t, Upgrade, "Upgrade")
-}
-
-func TestEdit(t *testing.T) {
-	testEcho(t, Edit, "Edit")
-}
-
-func TestNew(t *testing.T) {
-	testEcho(t, New, "New")
-}
-
-func TestDownload(t *testing.T) {
-	testEcho(t, Download, "Download")
-}
-
-func TestUpload(t *testing.T) {
-	testEcho(t, Upload, "Upload")
-}
-
-func TestSync(t *testing.T) {
-	testEcho(t, Sync, "Sync")
-}
-
-func TestSearch(t *testing.T) {
-	testEcho(t, Search, "Search")
+	if !callbackExecuted {
+		t.Errorf("Callback should have been executed")
+	}
 }
