@@ -53,35 +53,6 @@ func TestEcho(t *testing.T) {
 	}
 }
 
-func TestExitDisablesCallback(t *testing.T) {
-	opts := OptionsDefault().WithExit().WithCallback(func(msgType MessageType, text string) {
-		t.Errorf("Callback should not be executed when Exit is enabled")
-	})
-
-	if opts.Callback != nil {
-		t.Errorf("Callback should be nil when Exit is enabled")
-	}
-}
-
-func TestCallbackDisablesExit(t *testing.T) {
-	var callbackExecuted bool
-	callback := func(msgType MessageType, text string) {
-		callbackExecuted = true
-	}
-
-	opts := OptionsDefault().WithCallback(callback).WithExit()
-
-	if opts.Exit {
-		t.Errorf("Exit should be disabled when Callback is set")
-	}
-
-	Echo(MessageSuccess, "Test message", opts)
-
-	if !callbackExecuted {
-		t.Errorf("Callback should have been executed")
-	}
-}
-
 func TestAllMessageFunctions(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -116,5 +87,36 @@ func TestAllMessageFunctions(t *testing.T) {
 				t.Errorf("Expected output to contain: %q, but got: %q", tt.message, output)
 			}
 		})
+	}
+}
+
+func TestExitDisablesCallback(t *testing.T) {
+	opts := OptionsDefault().WithExit()
+
+	if opts.Callback != nil {
+		t.Errorf("Callback should be nil when Exit is enabled")
+	}
+
+	if !opts.Exit {
+		t.Errorf("Exit should be enabled")
+	}
+}
+
+func TestCallbackDisablesExit(t *testing.T) {
+	var callbackExecuted bool
+	callback := func(msgType MessageType, text string) {
+		callbackExecuted = true
+	}
+
+	opts := OptionsDefault().WithCallback(callback)
+
+	if opts.Exit {
+		t.Errorf("Exit should be disabled when Callback is set")
+	}
+
+	Echo(MessageSuccess, "Test message", opts)
+
+	if !callbackExecuted {
+		t.Errorf("Callback should have been executed")
 	}
 }
