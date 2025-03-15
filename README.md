@@ -151,6 +151,10 @@ Tests ensure the correct formatting and behavior of messages and options.
 
 ---
 
+## 📌 Changelog
+
+See the full changelog [here](CHANGELOG.md).
+
 ## 📌 **Contributing**
 
 Contributions are welcome! To suggest improvements, open an **issue** or submit a **pull request**.
