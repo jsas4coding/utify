@@ -20,9 +20,14 @@ jobs:
         run: make test TIMEOUT=10m
       - name: Run Tests with Coverage
         run: make coverage
-      - name: Check if Coverage File Exists
+      - name: Check if Coverage File Exists (Cross-Platform)
         run: |
-          if [ -f coverage.out ]; then echo "Coverage file exists."; else echo "No coverage file found."; fi
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            if (Test-Path coverage.out) { echo "Coverage file exists." } else { echo "No coverage file found." }
+          else
+            if [ -f coverage.out ]; then echo "Coverage file exists."; else echo "No coverage file found."; fi
+          fi
+        shell: bash
       - name: Upload Coverage Report
         if: success()
         uses: codecov/codecov-action@v4
