@@ -20,14 +20,24 @@ jobs:
         run: make test TIMEOUT=10m
       - name: Run Tests with Coverage
         run: make coverage
-      - name: Check if Coverage File Exists (Cross-Platform)
+      - name: Check Coverage File (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            if (Test-Path coverage.out) { echo "Coverage file exists." } else { echo "No coverage file found." }
-          else
-            if [ -f coverage.out ]; then echo "Coverage file exists."; else echo "No coverage file found."; fi
-          fi
+          if (Test-Path coverage.out) {
+            echo "Coverage file exists."
+          } else {
+            echo "No coverage file found."
+          }
+      - name: Check Coverage File (Linux/macOS)
+        if: runner.os != 'Windows'
         shell: bash
+        run: |
+          if [ -f coverage.out ]; then
+            echo "Coverage file exists."
+          else
+            echo "No coverage file found."
+          fi
       - name: Upload Coverage Report
         if: success()
         uses: codecov/codecov-action@v4
@@ -50,9 +60,11 @@ jobs:
           go install github.com/golangci/golangci-lint/cmd/golangci-lint@$LINTER_VERSION
       - name: Tidy Go Modules
         run: go mod tidy
-      - name: Run linters
-        run: |
-          case "$RUNNER_OS" in
-            Windows) go vet ./... ;;
-            *) make lint ;;
-          esac
+      - name: Run linters (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: go vet ./...
+      - name: Run linters (Linux/macOS)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: make lint
