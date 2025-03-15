@@ -17,29 +17,10 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Run Tests
-        run: make test TIMEOUT=10m
+        run: make test
       - name: Run Tests with Coverage
         run: make coverage
-      - name: Check Coverage File (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          if (Test-Path coverage.out) {
-            echo "Coverage file exists."
-          } else {
-            echo "No coverage file found."
-          }
-      - name: Check Coverage File (Linux/macOS)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          if [ -f coverage.out ]; then
-            echo "Coverage file exists."
-          else
-            echo "No coverage file found."
-          fi
       - name: Upload Coverage Report
-        if: success()
         uses: codecov/codecov-action@v4
         with:
           files: coverage.out
@@ -55,17 +36,6 @@ jobs:
         with:
           go-version-file: go.mod
       - name: Install golangci-lint
-        run: |
-          LINTER_VERSION=v1.55.2
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin $LINTER_VERSION
-      - name: Tidy Go Modules
-        run: go mod tidy
-      - name: Run linters (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: go vet ./...
-      - name: Run linters (Linux/macOS)
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          $(go env GOPATH)/bin/golangci-lint run --timeout=5m
+        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - name: Run linters
+        run: make lint
