@@ -45,7 +45,7 @@ func TestEcho(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output := captureOutput(func() {
-				Echo(tt.msgType, tt.text, tt.options)
+				_, _ = Echo(tt.msgType, tt.text, tt.options)
 			})
 
 			if !strings.Contains(output, tt.expected) {
@@ -83,7 +83,7 @@ func TestMessageFunctions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output := captureOutput(func() {
-				tt.fn(tt.message, OptionsDefault())
+				_, _ = tt.fn(tt.message, OptionsDefault())
 			})
 
 			if !strings.Contains(output, tt.message) {
@@ -118,7 +118,7 @@ func TestCallbackDisablesExit(t *testing.T) {
 	}
 
 	opts := OptionsDefault().WithCallback(cb)
-	Echo(MessageSuccess, "Testing callback", opts)
+	_, _ = Echo(MessageSuccess, "Testing callback", opts)
 
 	if !called {
 		t.Errorf("Expected callback to be called")
@@ -155,7 +155,7 @@ func TestFormattedFunctions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			expected := "Formatted " + tt.name
 			output := captureOutput(func() {
-				tt.fn("Formatted %s", OptionsDefault(), tt.name)
+				_, _ = tt.fn("Formatted %s", OptionsDefault(), tt.name)
 			})
 
 			if !strings.Contains(output, expected) {
