@@ -1,6 +1,7 @@
 package utify
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"maps"
@@ -134,6 +135,7 @@ var colors = map[MessageType]string{
 	Default:           ColorWhite,
 }
 
+var ErrSilent = errors.New("silent error")
 var userColors = map[string]string{}
 
 func SetColorTable(newColors map[string]string) {
@@ -148,7 +150,7 @@ func getColor(msgType MessageType) string {
 	return colors[msgType]
 }
 
-func Echo(msgType MessageType, text string, opts *Options) {
+func Echo(msgType MessageType, text string, opts *Options) (string, error) {
 	color := getColor(msgType)
 
 	if opts.NoColor {
@@ -175,132 +177,181 @@ func Echo(msgType MessageType, text string, opts *Options) {
 
 	log.Printf("[%s] %s", strings.ToUpper(string(msgType)), text)
 
+	errorTypes := map[MessageType]bool{
+		MessageError:    true,
+		MessageCritical: true,
+		MessageDebug:    true,
+	}
+
 	if opts.Callback != nil {
 		opts.Callback(msgType, text)
-	} else if opts.Exit {
-		errorTypes := map[MessageType]bool{
-			MessageError:    true,
-			MessageCritical: true,
-			MessageDebug:    true,
-		}
-
-		if errorTypes[msgType] {
-			os.Exit(1)
-		}
+	} else if opts.Exit && errorTypes[msgType] {
+		os.Exit(1)
 	}
+
+	if errorTypes[msgType] {
+		return text, ErrSilent
+	}
+
+	return text, nil
 }
 
-func Success(text string, opts *Options)  { Echo(MessageSuccess, text, opts) }
-func Error(text string, opts *Options)    { Echo(MessageError, text, opts) }
-func Warning(text string, opts *Options)  { Echo(MessageWarning, text, opts) }
-func Info(text string, opts *Options)     { Echo(MessageInfo, text, opts) }
-func Debug(text string, opts *Options)    { Echo(MessageDebug, text, opts) }
-func Critical(text string, opts *Options) { Echo(MessageCritical, text, opts) }
-
-func Delete(text string, opts *Options)  { Echo(MessageDelete, text, opts) }
-func Update(text string, opts *Options)  { Echo(MessageUpdate, text, opts) }
-func Install(text string, opts *Options) { Echo(MessageInstall, text, opts) }
-func Upgrade(text string, opts *Options) { Echo(MessageUpgrade, text, opts) }
-func Edit(text string, opts *Options)    { Echo(MessageEdit, text, opts) }
-func New(text string, opts *Options)     { Echo(MessageNew, text, opts) }
-
-func Download(text string, opts *Options) { Echo(MessageDownload, text, opts) }
-func Upload(text string, opts *Options)   { Echo(MessageUpload, text, opts) }
-func Sync(text string, opts *Options)     { Echo(MessageSync, text, opts) }
-func Search(text string, opts *Options)   { Echo(MessageSearch, text, opts) }
-
-func Successf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Success(text, opts)
+func Success(text string, opts *Options) (string, error) {
+	return Echo(MessageSuccess, text, opts)
 }
 
-func Errorf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Error(text, opts)
+func Error(text string, opts *Options) (string, error) {
+	return Echo(MessageError, text, opts)
 }
 
-func Warningf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Warning(text, opts)
+func Warning(text string, opts *Options) (string, error) {
+	return Echo(MessageWarning, text, opts)
 }
 
-func Infof(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Info(text, opts)
+func Info(text string, opts *Options) (string, error) {
+	return Echo(MessageInfo, text, opts)
 }
 
-func Debugf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Debug(text, opts)
+func Debug(text string, opts *Options) (string, error) {
+	return Echo(MessageDebug, text, opts)
 }
 
-func Criticalf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Critical(text, opts)
+func Critical(text string, opts *Options) (string, error) {
+	return Echo(MessageCritical, text, opts)
 }
 
-func Deletef(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Delete(text, opts)
+func Delete(text string, opts *Options) (string, error) {
+	return Echo(MessageDelete, text, opts)
 }
 
-func Updatef(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Update(text, opts)
+func Update(text string, opts *Options) (string, error) {
+	return Echo(MessageUpdate, text, opts)
 }
 
-func Installf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Install(text, opts)
+func Install(text string, opts *Options) (string, error) {
+	return Echo(MessageInstall, text, opts)
 }
 
-func Upgradef(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Upgrade(text, opts)
+func Upgrade(text string, opts *Options) (string, error) {
+	return Echo(MessageUpgrade, text, opts)
 }
 
-func Editf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Edit(text, opts)
+func Edit(text string, opts *Options) (string, error) {
+	return Echo(MessageEdit, text, opts)
 }
 
-func Newf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	New(text, opts)
+func New(text string, opts *Options) (string, error) {
+	return Echo(MessageNew, text, opts)
 }
 
-func Downloadf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Download(text, opts)
+func Download(text string, opts *Options) (string, error) {
+	return Echo(MessageDownload, text, opts)
 }
 
-func Uploadf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Upload(text, opts)
+func Upload(text string, opts *Options) (string, error) {
+	return Echo(MessageUpload, text, opts)
 }
 
-func Syncf(text string, opts *Options, args ...any) {
-	text = fmt.Sprintf(text, args...)
-
-	Sync(text, opts)
+func Sync(text string, opts *Options) (string, error) {
+	return Echo(MessageSync, text, opts)
 }
 
-func Searchf(text string, opts *Options, args ...any) {
+func Search(text string, opts *Options) (string, error) {
+	return Echo(MessageSearch, text, opts)
+}
+
+func Successf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	Search(text, opts)
+	return Success(text, opts)
+}
+
+func Errorf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Error(text, opts)
+}
+
+func Warningf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Warning(text, opts)
+}
+
+func Infof(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Info(text, opts)
+}
+
+func Debugf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Debug(text, opts)
+}
+
+func Criticalf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Critical(text, opts)
+}
+
+func Deletef(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Delete(text, opts)
+}
+
+func Updatef(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Update(text, opts)
+}
+
+func Installf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Install(text, opts)
+}
+
+func Upgradef(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Upgrade(text, opts)
+}
+
+func Editf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Edit(text, opts)
+}
+
+func Newf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return New(text, opts)
+}
+
+func Downloadf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Download(text, opts)
+}
+
+func Uploadf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Upload(text, opts)
+}
+
+func Syncf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Sync(text, opts)
+}
+
+func Searchf(text string, opts *Options, args ...any) (string, error) {
+	text = fmt.Sprintf(text, args...)
+
+	return Search(text, opts)
 }
