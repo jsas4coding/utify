@@ -7,13 +7,11 @@
 ![Code Coverage](https://img.shields.io/codecov/c/github/jonatas-sas/utify)
 ![Stars](https://img.shields.io/github/stars/jonatas-sas/utify?style=social)
 
-**Utify** is a Go library for displaying styled messages in the terminal, with support for colors, advanced formatting, and customizable callbacks.
+**Utify** is a Go library for displaying styled messages in the terminal, with support for color, formatting, error handling, and custom callbacks.
 
 ---
 
-## 📌 **Installation**
-
-To install **Utify**, run:
+## 📦 Installation
 
 ```sh
 go get github.com/jonatas-sas/utify
@@ -21,7 +19,7 @@ go get github.com/jonatas-sas/utify
 
 ---
 
-## 📌 **Basic Usage**
+## 🚀 Basic Usage
 
 ```go
 package main
@@ -31,136 +29,139 @@ import (
 )
 
 func main() {
-	opts := utify.OptionsDefault() // Default options
+	opts := utify.OptionsDefault()
 
-	utify.Success("Operation completed successfully!", opts)
-	utify.Error("An unexpected error occurred.", opts)
-	utify.Warning("This might cause issues.", opts)
-	utify.Info("Useful information.", opts)
-	utify.Debug("Debugging enabled.", opts)
-	utify.Critical("Critical error!", opts)
+	utify.Success("Operation completed!", opts)
+	utify.Error("An error occurred!", opts)
+	utify.Warning("Pay attention!", opts)
+	utify.Info("Here is some info.", opts)
+	utify.Debug("Debug message.", opts)
+	utify.Critical("System failure!", opts)
 }
 ```
 
+All methods return `(string, error)`. Errors of type `Error`, `Critical` and `Debug` will return `utify.ErrSilent`, since the message is already displayed on screen.
+
 ---
 
-## 📌 **Styling Options**
+## 🎨 Styling Options
 
-Utify allows configuring messages with various styling options:
+Customize output using chained methods:
 
-| Option     | Description                                                             |
-| ---------- | ----------------------------------------------------------------------- |
-| `Bold`     | Displays text in **bold**                                               |
-| `Italic`   | Displays text in _italic_                                               |
-| `NoColor`  | Removes colors from the output                                          |
-| `NoIcon`   | Removes icons from messages                                             |
-| `NoStyle`  | Removes all formatting (bold/italic)                                    |
-| `Exit`     | Terminates execution after displaying the message (disables `Callback`) |
-| `Callback` | Executes a function after displaying the message (disables `Exit`)      |
+| Method              | Effect                                               |
+| ------------------- | ---------------------------------------------------- |
+| `.WithBold()`       | Makes the message **bold**                           |
+| `.WithItalic()`     | Makes the message _italic_                           |
+| `.WithoutColor()`   | Disables all ANSI color codes                        |
+| `.WithoutIcon()`    | Disables icons (future-proof option)                 |
+| `.WithoutStyle()`   | Disables all styling (bold, italic, etc.)            |
+| `.WithExit()`       | Exits the program (`os.Exit(1)`) after showing error |
+| `.WithCallback(fn)` | Executes callback after message (disables exit)      |
 
-### **Example with options:**
+### Example:
 
 ```go
 opts := utify.OptionsDefault().
-    WithBold().
-    WithoutColor()
+  WithBold().
+  WithoutColor()
 
-utify.Success("Bold message without color", opts)
+utify.Warning("This is bold but no color", opts)
 ```
 
 ---
 
-## 📌 **Using Callbacks**
+## 🧠 Using Callbacks
 
-The `Callback` option allows executing a function after displaying a message. **If `Callback` is set, `Exit` is automatically disabled.** Likewise, **if `Exit` is enabled, `Callback` will be ignored.**
+If you want to hook into messages (e.g. for logging, metrics), use `.WithCallback(...)`.
 
 ```go
-callback := func(msgType utify.MessageType, msg string) {
-	fmt.Printf("[Callback] Message displayed: %s - Type: %s\n", msg, msgType)
+callback := func(t utify.MessageType, msg string) {
+	fmt.Printf("📣 Callback triggered: [%s] %s\n", t, msg)
 }
 
 opts := utify.OptionsDefault().
-    WithCallback(callback)
+  WithCallback(callback)
 
-utify.Error("Failed to connect to the database!", opts)
+utify.Critical("Oops!", opts)
 ```
 
-Output:
+⚠️ When `.WithCallback()` is used, `.WithExit()` is ignored — and vice-versa.
 
-```
-[31m Failed to connect to the database![0m
-[Callback] Message displayed: Failed to connect to the database! - Type: error
+---
+
+## 🧹 Available Methods
+
+### ✅ General Status
+
+- `Success(text string, opts *Options)`
+- `Error(text string, opts *Options)`
+- `Warning(text string, opts *Options)`
+- `Info(text string, opts *Options)`
+- `Debug(text string, opts *Options)`
+- `Critical(text string, opts *Options)`
+
+### 🛠️ Common Actions
+
+- `Delete(...)`, `Update(...)`, `Install(...)`, `Upgrade(...)`, `Edit(...)`, `New(...)`
+
+### 🔄 I/O Operations
+
+- `Download(...)`, `Upload(...)`, `Sync(...)`, `Search(...)`
+
+Each of the above also has a `*f` version, e.g.:
+
+```go
+utify.Successf("Success %d: %s", opts, 200, "OK")
 ```
 
 ---
 
-## 📌 **Available Methods**
+## 💠 Using Echo (Low-level)
 
-Utify provides specific methods for different message types:
-
-### **🟢 General Status Messages**
-
-- `Success(text string, opts *Options)` → Success message
-- `Error(text string, opts *Options)` → Error message
-- `Warning(text string, opts *Options)` → Warning message
-- `Info(text string, opts *Options)` → Informational message
-- `Debug(text string, opts *Options)` → Debugging message
-- `Critical(text string, opts *Options)` → Critical error
-
-### **🛠️ Common Actions**
-
-- `Delete(text string, opts *Options)` → Indicates item deletion
-- `Update(text string, opts *Options)` → Indicates data update
-- `Install(text string, opts *Options)` → Indicates package installation
-- `Upgrade(text string, opts *Options)` → Indicates version upgrade
-- `Edit(text string, opts *Options)` → Indicates item modification
-- `New(text string, opts *Options)` → Indicates creation of new items
-
-### **📂 Specific Operations**
-
-- `Download(text string, opts *Options)` → Indicates a download process
-- `Upload(text string, opts *Options)` → Indicates an upload process
-- `Sync(text string, opts *Options)` → Indicates data synchronization
-- `Search(text string, opts *Options)` → Indicates a search operation
-
----
-
-## 📌 **Using `Echo` for Customization**
-
-If you need even more customization, you can call `Echo` directly:
+If you need full control, use `Echo(...)`:
 
 ```go
 opts := utify.OptionsDefault().
-    WithBold().
-    WithoutIcon()
+  WithBold().
+  WithoutIcon()
 
-utify.Echo(utify.MessageSuccess, "Custom message", opts)
+utify.Echo(utify.MessageInstall, "Installing package...", opts)
+```
+
+Return:
+
+```go
+(text string, err error)
+```
+
+If it's an error-type message, the error returned will be:
+
+```go
+utify.ErrSilent
 ```
 
 ---
 
-## 📌 **Running Tests**
+## ✅ Testing
 
-To run the tests, use:
-
-```sh
+```bash
 go test -v
 ```
 
-Tests ensure the correct formatting and behavior of messages and options.
+To check coverage:
+
+```bash
+go test -coverprofile=cover.out && go tool cover -html=cover.out
+```
 
 ---
 
-## 📌 Changelog
+## 📄 License
 
-See the full changelog [here](CHANGELOG.md).
-
-## 📌 **Contributing**
-
-Contributions are welcome! To suggest improvements, open an **issue** or submit a **pull request**.
+Licensed under the [MIT License](LICENSE).
 
 ---
 
-## 📌 **License**
+## 🤝 Contributing
 
-This project is licensed under the **MIT License**.
+Feel free to open issues, discuss features, or submit PRs! Let's make terminals beautiful, together.
