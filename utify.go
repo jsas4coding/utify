@@ -215,9 +215,10 @@ func Info(text string, opts *Options) (string, error) {
 	Echo(MessageInfo, text, opts)
 	return text, nil
 }
+
 func Debug(text string, opts *Options) (string, error) {
 	Echo(MessageDebug, text, opts)
-	return text, nil
+	return text, ErrSilent
 }
 
 func Critical(text string, opts *Options) (string, error) {
