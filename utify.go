@@ -197,83 +197,67 @@ func Echo(msgType MessageType, text string, opts *Options) (string, error) {
 }
 
 func Success(text string, opts *Options) (string, error) {
-	Echo(MessageSuccess, text, opts)
-	return text, nil
+	return Echo(MessageSuccess, text, opts)
 }
 
 func Error(text string, opts *Options) (string, error) {
-	Echo(MessageError, text, opts)
-	return text, ErrSilent
+	return Echo(MessageError, text, opts)
 }
 
 func Warning(text string, opts *Options) (string, error) {
-	Echo(MessageWarning, text, opts)
-	return text, nil
+	return Echo(MessageWarning, text, opts)
 }
 
 func Info(text string, opts *Options) (string, error) {
-	Echo(MessageInfo, text, opts)
-	return text, nil
+	return Echo(MessageInfo, text, opts)
 }
 
 func Debug(text string, opts *Options) (string, error) {
-	Echo(MessageDebug, text, opts)
-	return text, ErrSilent
+	return Echo(MessageDebug, text, opts)
 }
 
 func Critical(text string, opts *Options) (string, error) {
-	Echo(MessageCritical, text, opts)
-	return text, ErrSilent
+	return Echo(MessageCritical, text, opts)
 }
 
 func Delete(text string, opts *Options) (string, error) {
-	Echo(MessageDelete, text, opts)
-	return text, nil
+	return Echo(MessageDelete, text, opts)
 }
 
 func Update(text string, opts *Options) (string, error) {
-	Echo(MessageUpdate, text, opts)
-	return text, nil
+	return Echo(MessageUpdate, text, opts)
 }
 
 func Install(text string, opts *Options) (string, error) {
-	Echo(MessageInstall, text, opts)
-	return text, nil
+	return Echo(MessageInstall, text, opts)
 }
 
 func Upgrade(text string, opts *Options) (string, error) {
-	Echo(MessageUpgrade, text, opts)
-	return text, nil
+	return Echo(MessageUpgrade, text, opts)
 }
 
 func Edit(text string, opts *Options) (string, error) {
-	Echo(MessageEdit, text, opts)
-	return text, nil
+	return Echo(MessageEdit, text, opts)
 }
 
 func New(text string, opts *Options) (string, error) {
-	Echo(MessageNew, text, opts)
-	return text, nil
+	return Echo(MessageNew, text, opts)
 }
 
 func Download(text string, opts *Options) (string, error) {
-	Echo(MessageDownload, text, opts)
-	return text, nil
+	return Echo(MessageDownload, text, opts)
 }
 
 func Upload(text string, opts *Options) (string, error) {
-	Echo(MessageUpload, text, opts)
-	return text, nil
+	return Echo(MessageUpload, text, opts)
 }
 
 func Sync(text string, opts *Options) (string, error) {
-	Echo(MessageSync, text, opts)
-	return text, nil
+	return Echo(MessageSync, text, opts)
 }
 
 func Search(text string, opts *Options) (string, error) {
-	Echo(MessageSearch, text, opts)
-	return text, nil
+	return Echo(MessageSearch, text, opts)
 }
 
 func Successf(text string, opts *Options, args ...any) (string, error) {
