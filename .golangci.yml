@@ -1,23 +1,18 @@
 run:
   timeout: 2m
   tests: true
-  skip-dirs:
-    - bin
 linters:
   enable:
-    - errcheck # Verifica se erros de funções são tratados
-    - govet # Vet padrão do Go
-    - gosimple # Simplificações possíveis
-    - staticcheck # Análise estática poderosa
-    - typecheck # Verificação de tipos
-    - unused # Variáveis ou funções não utilizadas
-    - deadcode # Código morto
-    - structcheck # Campos não utilizados
-    - varcheck # Variáveis globais não usadas
-    - revive # Substituto moderno do golint
-    - gofmt # Enforce gofmt
-    - goimports # Enforce import order
-    - depguard # Restringe imports indesejados
+    - errcheck
+    - govet
+    - gosimple
+    - staticcheck
+    - typecheck
+    - unused
+    - revive
+    - gofmt
+    - goimports
+    - depguard
 linters-settings:
   errcheck:
     check-type-assertions: true
@@ -28,8 +23,8 @@ linters-settings:
       rules = [
         { name = "indent-error-flow" },
         { name = "var-naming" },
-        { name = "imports-blacklist", arguments = ["fmt"] },
         { name = "blank-imports", severity = "error" },
+        { name = "exported", severity = "warning" }
       ]
   gofmt:
     simplify: true
@@ -44,7 +39,8 @@ issues:
   max-same-issues: 5
   max-issues-per-linter: 0
   max-issues: 0
-  exclude:
-    - "should have comment or be unexported" # ignora exigência de comentários
+  exclude-dirs:
+    - bin
 output:
-  format: colored-line-number
+  formats:
+    - format: colored-line-number
