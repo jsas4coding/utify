@@ -17,7 +17,7 @@ func captureOutput(f func()) string {
 
 	f()
 
-	w.Close()
+	_ = w.Close()
 	os.Stdout = old
 	_, _ = buf.ReadFrom(r)
 	return buf.String()
@@ -107,7 +107,7 @@ func TestExitDisablesCallback(t *testing.T) {
 
 func TestCallbackDisablesExit(t *testing.T) {
 	var called bool
-	cb := func(msgType MessageType, text string) {
+	cb := func(_ MessageType, _ string) {
 		called = true
 	}
 
