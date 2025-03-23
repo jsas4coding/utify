@@ -1,0 +1,50 @@
+run:
+  timeout: 2m
+  tests: true
+  skip-dirs:
+    - bin
+linters:
+  enable:
+    - errcheck # Verifica se erros de funções são tratados
+    - govet # Vet padrão do Go
+    - gosimple # Simplificações possíveis
+    - staticcheck # Análise estática poderosa
+    - typecheck # Verificação de tipos
+    - unused # Variáveis ou funções não utilizadas
+    - deadcode # Código morto
+    - structcheck # Campos não utilizados
+    - varcheck # Variáveis globais não usadas
+    - revive # Substituto moderno do golint
+    - gofmt # Enforce gofmt
+    - goimports # Enforce import order
+    - depguard # Restringe imports indesejados
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+  revive:
+    config: |
+      ignoreGeneratedHeader = false
+      severity = "warning"
+      rules = [
+        { name = "indent-error-flow" },
+        { name = "var-naming" },
+        { name = "imports-blacklist", arguments = ["fmt"] },
+        { name = "blank-imports", severity = "error" },
+      ]
+  gofmt:
+    simplify: true
+  depguard:
+    list-type: blacklist
+    packages:
+      - fmt
+    packages-with-error-message:
+      fmt: "Use 'log' or structured logging instead of 'fmt' in core logic"
+issues:
+  exclude-use-default: false
+  max-same-issues: 5
+  max-issues-per-linter: 0
+  max-issues: 0
+  exclude:
+    - "should have comment or be unexported" # ignora exigência de comentários
+output:
+  format: colored-line-number
