@@ -3,6 +3,7 @@ package utify
 import (
 	"bytes"
 	"errors"
+	"log"
 	"os"
 	"strings"
 	"testing"
@@ -58,7 +59,7 @@ func TestEcho(t *testing.T) {
 func TestMessageFunctions(t *testing.T) {
 	tests := []struct {
 		name    string
-		fn      func(string, *Options) (string, error)
+		fn      func(string, *Options)
 		message string
 		isError bool
 	}{
@@ -83,18 +84,11 @@ func TestMessageFunctions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output := captureOutput(func() {
-				_, _ = tt.fn(tt.message, OptionsDefault())
+				tt.fn(tt.message, OptionsDefault())
 			})
 
 			if !strings.Contains(output, tt.message) {
 				t.Errorf("Expected output to contain %q, got %q", tt.message, output)
-			}
-
-			_, err := tt.fn(tt.message, OptionsDefault())
-			if tt.isError && !errors.Is(err, ErrSilent) {
-				t.Errorf("Expected ErrSilent for %s, got %v", tt.name, err)
-			} else if !tt.isError && err != nil {
-				t.Errorf("Expected nil error for %s, got %v", tt.name, err)
 			}
 		})
 	}
@@ -131,7 +125,7 @@ func TestCallbackDisablesExit(t *testing.T) {
 func TestFormattedFunctions(t *testing.T) {
 	tests := []struct {
 		name string
-		fn   func(string, *Options, ...any) (string, error)
+		fn   func(string, *Options, ...any)
 	}{
 		{"Successf", Successf},
 		{"Errorf", Errorf},
@@ -155,11 +149,146 @@ func TestFormattedFunctions(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			expected := "Formatted " + tt.name
 			output := captureOutput(func() {
+				tt.fn("Formatted %s", OptionsDefault(), tt.name)
+			})
+
+			if !strings.Contains(output, expected) {
+				t.Errorf("Expected output to contain %q, got %q", expected, output)
+			}
+		})
+	}
+}
+
+func TestGetFunctions(t *testing.T) {
+	tests := []struct {
+		name    string
+		fn      func(string, *Options) (string, error)
+		message string
+		isError bool
+	}{
+		{"GetSuccess", GetSuccess, "Success!", false},
+		{"GetError", GetError, "Something failed", true},
+		{"GetWarning", GetWarning, "Watch out!", false},
+		{"GetInfo", GetInfo, "FYI", false},
+		{"GetDebug", GetDebug, "Debugging", true},
+		{"GetCritical", GetCritical, "Boom!", true},
+		{"GetDelete", GetDelete, "Removed", false},
+		{"GetUpdate", GetUpdate, "Changed", false},
+		{"GetInstall", GetInstall, "Setup done", false},
+		{"GetUpgrade", GetUpgrade, "Upgraded", false},
+		{"GetEdit", GetEdit, "Modified", false},
+		{"GetNew", GetNew, "Created", false},
+		{"GetDownload", GetDownload, "Got it", false},
+		{"GetUpload", GetUpload, "Sent", false},
+		{"GetSync", GetSync, "Synchronized", false},
+		{"GetSearch", GetSearch, "Found something", false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := captureOutput(func() {
+				_, _ = tt.fn(tt.message, OptionsDefault())
+			})
+
+			if !strings.Contains(output, tt.message) {
+				t.Errorf("Expected output to contain %q, got %q", tt.message, output)
+			}
+
+			_, err := tt.fn(tt.message, OptionsDefault())
+			if tt.isError && !errors.Is(err, ErrSilent) {
+				t.Errorf("Expected ErrSilent for %s, got %v", tt.name, err)
+			} else if !tt.isError && err != nil {
+				t.Errorf("Expected nil error for %s, got %v", tt.name, err)
+			}
+		})
+	}
+}
+
+func TestGetFormattedFunctions(t *testing.T) {
+	tests := []struct {
+		name string
+		fn   func(string, *Options, ...any) (string, error)
+	}{
+		{"GetSuccessf", GetSuccessf},
+		{"GetErrorf", GetErrorf},
+		{"GetWarningf", GetWarningf},
+		{"GetInfof", GetInfof},
+		{"GetDebugf", GetDebugf},
+		{"GetCriticalf", GetCriticalf},
+		{"GetDeletef", GetDeletef},
+		{"GetUpdatef", GetUpdatef},
+		{"GetInstallf", GetInstallf},
+		{"GetUpgradef", GetUpgradef},
+		{"GetEditf", GetEditf},
+		{"GetNewf", GetNewf},
+		{"GetDownloadf", GetDownloadf},
+		{"GetUploadf", GetUploadf},
+		{"GetSyncf", GetSyncf},
+		{"GetSearchf", GetSearchf},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			expected := "Formatted " + tt.name
+			output := captureOutput(func() {
 				_, _ = tt.fn("Formatted %s", OptionsDefault(), tt.name)
 			})
 
 			if !strings.Contains(output, expected) {
 				t.Errorf("Expected output to contain %q, got %q", expected, output)
+			}
+		})
+	}
+}
+
+func TestSetColorTableOverride(t *testing.T) {
+	customColor := "\033[95m" // Purple
+	SetColorTable(map[string]string{
+		string(MessageSuccess): customColor,
+	})
+
+	opts := OptionsDefault().WithoutStyle()
+	output := captureOutput(func() {
+		Success("Custom success color", opts)
+	})
+
+	if !strings.Contains(output, customColor) {
+		t.Errorf("Expected output to contain custom color code %q, got %q", customColor, output)
+	}
+}
+
+func captureLogOutput(f func()) string {
+	var buf bytes.Buffer
+	log.SetOutput(&buf)
+	defer log.SetOutput(os.Stderr)
+
+	f()
+
+	return buf.String()
+}
+
+func TestLogOutput(t *testing.T) {
+	tests := []struct {
+		name    string
+		fn      func(string, *Options)
+		msgType MessageType
+	}{
+		{"SuccessLog", Success, MessageSuccess},
+		{"ErrorLog", Error, MessageError},
+		{"DebugLog", Debug, MessageDebug},
+		{"CriticalLog", Critical, MessageCritical},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			msg := "Log test message"
+			logOut := captureLogOutput(func() {
+				tt.fn(msg, OptionsDefault())
+			})
+
+			expected := "[" + strings.ToUpper(string(tt.msgType)) + "] " + msg
+			if !strings.Contains(logOut, expected) {
+				t.Errorf("Expected log output to contain %q, got %q", expected, logOut)
 			}
 		})
 	}
