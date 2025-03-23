@@ -40,7 +40,13 @@ func main() {
 }
 ```
 
-All methods return `(string, error)`. Errors of type `Error`, `Critical` and `Debug` will return `utify.ErrSilent`, since the message is already displayed on screen.
+All methods print the message and log it. Methods that represent errors (`Error`, `Critical`, `Debug`) return the sentinel `utify.ErrSilent`.
+
+To get the output and handle it manually, use the `Get*` functions:
+
+```go
+text, err := utify.GetError("Oops!", opts)
+```
 
 ---
 
@@ -70,13 +76,13 @@ utify.Warning("This is bold but no color", opts)
 
 ---
 
-## 🧠 Using Callbacks
+## 🧐 Using Callbacks
 
-If you want to hook into messages (e.g. for logging, metrics), use `.WithCallback(...)`.
+If you want to hook into messages (e.g. for logging, metrics), use `.WithCallback(...)`:
 
 ```go
 callback := func(t utify.MessageType, msg string) {
-	fmt.Printf("📣 Callback triggered: [%s] %s\n", t, msg)
+	fmt.Printf("\ud83d\udce3 Callback triggered: [%s] %s\n", t, msg)
 }
 
 opts := utify.OptionsDefault().
@@ -85,7 +91,7 @@ opts := utify.OptionsDefault().
 utify.Critical("Oops!", opts)
 ```
 
-⚠️ When `.WithCallback()` is used, `.WithExit()` is ignored — and vice-versa.
+️ When `.WithCallback()` is used, `.WithExit()` is ignored — and vice-versa.
 
 ---
 
@@ -108,15 +114,21 @@ utify.Critical("Oops!", opts)
 
 - `Download(...)`, `Upload(...)`, `Sync(...)`, `Search(...)`
 
-Each of the above also has a `*f` version, e.g.:
+Each of the above also has a `*f` version:
 
 ```go
 utify.Successf("Success %d: %s", opts, 200, "OK")
 ```
 
+For full control and output, use `Get*` or `Get*f` versions:
+
+```go
+result, err := utify.GetCriticalf("Crash code %d", opts, 42)
+```
+
 ---
 
-## 💠 Using Echo (Low-level)
+## 🔠 Using Echo (Low-level)
 
 If you need full control, use `Echo(...)`:
 

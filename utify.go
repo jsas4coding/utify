@@ -196,162 +196,322 @@ func Echo(msgType MessageType, text string, opts *Options) (string, error) {
 	return text, nil
 }
 
-func Success(text string, opts *Options) (string, error) {
+func Success(text string, opts *Options) {
+	_, _ = Echo(MessageSuccess, text, opts)
+}
+
+func Error(text string, opts *Options) {
+	_, _ = Echo(MessageError, text, opts)
+}
+
+func Warning(text string, opts *Options) {
+	_, _ = Echo(MessageWarning, text, opts)
+}
+
+func Info(text string, opts *Options) {
+	_, _ = Echo(MessageInfo, text, opts)
+}
+
+func Debug(text string, opts *Options) {
+	_, _ = Echo(MessageDebug, text, opts)
+}
+
+func Critical(text string, opts *Options) {
+	_, _ = Echo(MessageCritical, text, opts)
+}
+
+func Delete(text string, opts *Options) {
+	_, _ = Echo(MessageDelete, text, opts)
+}
+
+func Update(text string, opts *Options) {
+	_, _ = Echo(MessageUpdate, text, opts)
+}
+
+func Install(text string, opts *Options) {
+	_, _ = Echo(MessageInstall, text, opts)
+}
+
+func Upgrade(text string, opts *Options) {
+	_, _ = Echo(MessageUpgrade, text, opts)
+}
+
+func Edit(text string, opts *Options) {
+	_, _ = Echo(MessageEdit, text, opts)
+}
+
+func New(text string, opts *Options) {
+	_, _ = Echo(MessageNew, text, opts)
+}
+
+func Download(text string, opts *Options) {
+	_, _ = Echo(MessageDownload, text, opts)
+}
+
+func Upload(text string, opts *Options) {
+	_, _ = Echo(MessageUpload, text, opts)
+}
+
+func Sync(text string, opts *Options) {
+	_, _ = Echo(MessageSync, text, opts)
+}
+
+func Search(text string, opts *Options) {
+	_, _ = Echo(MessageSearch, text, opts)
+}
+
+func Successf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Success(text, opts)
+}
+
+func Errorf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Error(text, opts)
+}
+
+func Warningf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Warning(text, opts)
+}
+
+func Infof(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Info(text, opts)
+}
+
+func Debugf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Debug(text, opts)
+}
+
+func Criticalf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Critical(text, opts)
+}
+
+func Deletef(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Delete(text, opts)
+}
+
+func Updatef(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Update(text, opts)
+}
+
+func Installf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Install(text, opts)
+}
+
+func Upgradef(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Upgrade(text, opts)
+}
+
+func Editf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Edit(text, opts)
+}
+
+func Newf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	New(text, opts)
+}
+
+func Downloadf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Download(text, opts)
+}
+
+func Uploadf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Upload(text, opts)
+}
+
+func Syncf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Sync(text, opts)
+}
+
+func Searchf(text string, opts *Options, args ...any) {
+	text = fmt.Sprintf(text, args...)
+
+	Search(text, opts)
+}
+
+func GetSuccess(text string, opts *Options) (string, error) {
 	return Echo(MessageSuccess, text, opts)
 }
 
-func Error(text string, opts *Options) (string, error) {
+func GetError(text string, opts *Options) (string, error) {
 	return Echo(MessageError, text, opts)
 }
 
-func Warning(text string, opts *Options) (string, error) {
+func GetWarning(text string, opts *Options) (string, error) {
 	return Echo(MessageWarning, text, opts)
 }
 
-func Info(text string, opts *Options) (string, error) {
+func GetInfo(text string, opts *Options) (string, error) {
 	return Echo(MessageInfo, text, opts)
 }
 
-func Debug(text string, opts *Options) (string, error) {
+func GetDebug(text string, opts *Options) (string, error) {
 	return Echo(MessageDebug, text, opts)
 }
 
-func Critical(text string, opts *Options) (string, error) {
+func GetCritical(text string, opts *Options) (string, error) {
 	return Echo(MessageCritical, text, opts)
 }
 
-func Delete(text string, opts *Options) (string, error) {
+func GetDelete(text string, opts *Options) (string, error) {
 	return Echo(MessageDelete, text, opts)
 }
 
-func Update(text string, opts *Options) (string, error) {
+func GetUpdate(text string, opts *Options) (string, error) {
 	return Echo(MessageUpdate, text, opts)
 }
 
-func Install(text string, opts *Options) (string, error) {
+func GetInstall(text string, opts *Options) (string, error) {
 	return Echo(MessageInstall, text, opts)
 }
 
-func Upgrade(text string, opts *Options) (string, error) {
+func GetUpgrade(text string, opts *Options) (string, error) {
 	return Echo(MessageUpgrade, text, opts)
 }
 
-func Edit(text string, opts *Options) (string, error) {
+func GetEdit(text string, opts *Options) (string, error) {
 	return Echo(MessageEdit, text, opts)
 }
 
-func New(text string, opts *Options) (string, error) {
+func GetNew(text string, opts *Options) (string, error) {
 	return Echo(MessageNew, text, opts)
 }
 
-func Download(text string, opts *Options) (string, error) {
+func GetDownload(text string, opts *Options) (string, error) {
 	return Echo(MessageDownload, text, opts)
 }
 
-func Upload(text string, opts *Options) (string, error) {
+func GetUpload(text string, opts *Options) (string, error) {
 	return Echo(MessageUpload, text, opts)
 }
 
-func Sync(text string, opts *Options) (string, error) {
+func GetSync(text string, opts *Options) (string, error) {
 	return Echo(MessageSync, text, opts)
 }
 
-func Search(text string, opts *Options) (string, error) {
+func GetSearch(text string, opts *Options) (string, error) {
 	return Echo(MessageSearch, text, opts)
 }
 
-func Successf(text string, opts *Options, args ...any) (string, error) {
+func GetSuccessf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Success(text, opts)
+	return GetSuccess(text, opts)
 }
 
-func Errorf(text string, opts *Options, args ...any) (string, error) {
+func GetErrorf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Error(text, opts)
+	return GetError(text, opts)
 }
 
-func Warningf(text string, opts *Options, args ...any) (string, error) {
+func GetWarningf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Warning(text, opts)
+	return GetWarning(text, opts)
 }
 
-func Infof(text string, opts *Options, args ...any) (string, error) {
+func GetInfof(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Info(text, opts)
+	return GetInfo(text, opts)
 }
 
-func Debugf(text string, opts *Options, args ...any) (string, error) {
+func GetDebugf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Debug(text, opts)
+	return GetDebug(text, opts)
 }
 
-func Criticalf(text string, opts *Options, args ...any) (string, error) {
+func GetCriticalf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Critical(text, opts)
+	return GetCritical(text, opts)
 }
 
-func Deletef(text string, opts *Options, args ...any) (string, error) {
+func GetDeletef(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Delete(text, opts)
+	return GetDelete(text, opts)
 }
 
-func Updatef(text string, opts *Options, args ...any) (string, error) {
+func GetUpdatef(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Update(text, opts)
+	return GetUpdate(text, opts)
 }
 
-func Installf(text string, opts *Options, args ...any) (string, error) {
+func GetInstallf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Install(text, opts)
+	return GetInstall(text, opts)
 }
 
-func Upgradef(text string, opts *Options, args ...any) (string, error) {
+func GetUpgradef(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Upgrade(text, opts)
+	return GetUpgrade(text, opts)
 }
 
-func Editf(text string, opts *Options, args ...any) (string, error) {
+func GetEditf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Edit(text, opts)
+	return GetEdit(text, opts)
 }
 
-func Newf(text string, opts *Options, args ...any) (string, error) {
+func GetNewf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return New(text, opts)
+	return GetNew(text, opts)
 }
 
-func Downloadf(text string, opts *Options, args ...any) (string, error) {
+func GetDownloadf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Download(text, opts)
+	return GetDownload(text, opts)
 }
 
-func Uploadf(text string, opts *Options, args ...any) (string, error) {
+func GetUploadf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Upload(text, opts)
+	return GetUpload(text, opts)
 }
 
-func Syncf(text string, opts *Options, args ...any) (string, error) {
+func GetSyncf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Sync(text, opts)
+	return GetSync(text, opts)
 }
 
-func Searchf(text string, opts *Options, args ...any) (string, error) {
+func GetSearchf(text string, opts *Options, args ...any) (string, error) {
 	text = fmt.Sprintf(text, args...)
 
-	return Search(text, opts)
+	return GetSearch(text, opts)
 }
