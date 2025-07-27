@@ -94,25 +94,44 @@ func init() {
 // detectNerdFont checks if a Nerd Font is likely available
 func detectNerdFont() bool {
 	// First check for explicit user preference
-	if nerdFontEnv := os.Getenv("NERD_FONT_ENABLED"); nerdFontEnv != "" {
-		return strings.ToLower(nerdFontEnv) == "true" || nerdFontEnv == "1"
+	if checkExplicitNerdFontPreference() {
+		return true
 	}
 
-	// Check environment variables commonly set by terminals with Nerd Font support
-	termProgram := os.Getenv("TERM_PROGRAM")
-	terminal := os.Getenv("TERMINAL")
-	term := os.Getenv("TERM")
+	// Check terminal-based detection
+	if checkTerminalNerdFontSupport() {
+		return true
+	}
 
-	// Check for common terminals that typically use Nerd Fonts
+	// Check font environment variables
+	if checkFontEnvironmentVariables() {
+		return true
+	}
+
+	// Check terminal-specific environment variables
+	return checkTerminalSpecificVariables()
+}
+
+// checkExplicitNerdFontPreference checks for explicit user preference
+func checkExplicitNerdFontPreference() bool {
+	nerdFontEnv := os.Getenv("NERD_FONT_ENABLED")
+	if nerdFontEnv == "" {
+		return false
+	}
+	return strings.ToLower(nerdFontEnv) == "true" || nerdFontEnv == "1"
+}
+
+// checkTerminalNerdFontSupport checks if the terminal typically supports Nerd Fonts
+func checkTerminalNerdFontSupport() bool {
 	nerdFontTerminals := []string{
 		"alacritty", "kitty", "wezterm", "hyper", "rio",
 		"ghostty", "konsole", "gnome-terminal", "tilix",
 		"terminator", "iterm", "warp", "tabby",
 	}
 
-	termProgram = strings.ToLower(termProgram)
-	terminal = strings.ToLower(terminal)
-	term = strings.ToLower(term)
+	termProgram := strings.ToLower(os.Getenv("TERM_PROGRAM"))
+	terminal := strings.ToLower(os.Getenv("TERMINAL"))
+	term := strings.ToLower(os.Getenv("TERM"))
 
 	for _, termName := range nerdFontTerminals {
 		if strings.Contains(termProgram, termName) ||
@@ -121,25 +140,25 @@ func detectNerdFont() bool {
 			return true
 		}
 	}
+	return false
+}
 
-	// Check font-related environment variables
-	if font := os.Getenv("FONT"); font != "" {
-		font = strings.ToLower(font)
-		if strings.Contains(font, "nerd") || strings.Contains(font, "nerdfont") {
-			return true
-		}
+// checkFontEnvironmentVariables checks font-related environment variables
+func checkFontEnvironmentVariables() bool {
+	font := os.Getenv("FONT")
+	if font == "" {
+		return false
 	}
+	font = strings.ToLower(font)
+	return strings.Contains(font, "nerd") || strings.Contains(font, "nerdfont")
+}
 
-	// Additional checks for specific terminal features
-	// Some terminals set specific environment variables
-	if os.Getenv("KITTY_WINDOW_ID") != "" ||
+// checkTerminalSpecificVariables checks terminal-specific environment variables
+func checkTerminalSpecificVariables() bool {
+	return os.Getenv("KITTY_WINDOW_ID") != "" ||
 		os.Getenv("ALACRITTY_SOCKET") != "" ||
 		os.Getenv("WEZTERM_EXECUTABLE") != "" ||
-		os.Getenv("ITERM_SESSION_ID") != "" {
-		return true
-	}
-
-	return false
+		os.Getenv("ITERM_SESSION_ID") != ""
 }
 
 // GetIcon returns the appropriate icon for a message type
