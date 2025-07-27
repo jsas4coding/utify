@@ -1,13 +1,13 @@
 name: Enhanced CI/CD Pipeline
 
 on:
-  pull_request:
   push:
-    branches: [main]
-    tags: ['v*']
+    branches: ['**']  # All branches
+    tags: ['v*']      # All tags
+  pull_request:
+    branches: [main]  # PRs to main
 
-env:
-  GO_VERSION: '1.24.5'
+# GO_VERSION is read from go.mod file in each job
 
 jobs:
   # Quick validation job (runs first, fails fast)
@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -71,7 +71,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -146,13 +146,23 @@ jobs:
           go test -v -race -coverprofile=coverage.out -covermode=atomic ./tests/...
           go tool cover -html=coverage.out -o coverage.html
           
+      - name: Debug Codecov upload
+        if: matrix.coverage && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Coverage file exists: $(test -f coverage.out && echo 'yes' || echo 'no')"
+          ls -la coverage.out || echo "coverage.out not found"
+          
       - name: Upload coverage reports to Codecov
-        if: matrix.coverage
+        if: matrix.coverage && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: jsas4coding/utify
-          fail_ci_if_error: true
+          fail_ci_if_error: false  # Don't fail CI if Codecov has issues
+          verbose: true            # Enable verbose logging
+        continue-on-error: true    # Continue even if this step fails
           
       - name: Upload coverage artifacts
         if: matrix.coverage
@@ -175,7 +185,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           
       - name: Cache Go modules
         uses: actions/cache@v4
@@ -223,7 +233,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           
       - name: Build binary
         env:
