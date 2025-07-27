@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.1] - 2025-07-27
+
+### 🔧 Bug Fixes
+
+- **Lint Compliance**: Fixed all linting issues for clean code quality
+  - Fixed 7 `errcheck` violations by properly handling file close operations
+  - Fixed 1 `ineffassign` violation by removing unused variable assignment
+  - Updated golangci-lint configuration for modern standards
+
+### 🏗️ Code Quality
+
+- **Error Handling**: Improved error handling in logger cleanup operations
+- **Test Robustness**: Enhanced test cleanup to properly ignore expected errors
+- **Linting**: Achieved 0 lint issues across all linters (errcheck, govet, gosimple, staticcheck, unused, revive, gofmt, goimports)
+
+---
+
 ## [1.4.0] - 2025-07-27
 
 ### 🚀 Major Features

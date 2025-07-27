@@ -12,7 +12,7 @@ import (
 
 func TestSetLogTarget(t *testing.T) {
 	tempFile := "./test_utify.log"
-	defer os.Remove(tempFile)
+	defer func() { _ = os.Remove(tempFile) }() // Ignore error in cleanup
 
 	err := logger.SetLogTarget(tempFile)
 	if err != nil {
@@ -41,7 +41,7 @@ func TestLoggingEnabled(t *testing.T) {
 
 func TestLogMessage(t *testing.T) {
 	tempFile := "./test_utify_message.log"
-	defer os.Remove(tempFile)
+	defer func() { _ = os.Remove(tempFile) }() // Ignore error in cleanup
 
 	err := logger.SetLogTarget(tempFile)
 	if err != nil {
@@ -85,7 +85,7 @@ func TestLogMessage(t *testing.T) {
 
 func TestLogOnly(t *testing.T) {
 	tempFile := "./test_utify_only.log"
-	defer os.Remove(tempFile)
+	defer func() { _ = os.Remove(tempFile) }() // Ignore error in cleanup
 
 	err := logger.SetLogTarget(tempFile)
 	if err != nil {

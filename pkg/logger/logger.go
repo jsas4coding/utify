@@ -51,7 +51,6 @@ func initLogger() {
 	if err := os.MkdirAll(logDir, 0755); err != nil {
 		// If we can't create the directory, fall back to current directory
 		logTarget = fmt.Sprintf("%s.log", binaryName)
-		logDir = "."
 	}
 
 	var err error
@@ -73,7 +72,7 @@ func initLogger() {
 
 func SetLogTarget(target string) error {
 	if logFile != nil {
-		logFile.Close()
+		_ = logFile.Close() // Ignore error on close during reset
 	}
 	
 	logTarget = target
@@ -93,7 +92,7 @@ func GetLogTarget() string {
 func SetEnabled(enable bool) {
 	enabled = enable
 	if !enabled && logFile != nil {
-		logFile.Close()
+		_ = logFile.Close() // Ignore error on close during disable
 		logFile = nil
 		logger = nil
 	} else if enabled && logFile == nil {
@@ -134,7 +133,7 @@ func LogOnly(msgType messages.Type, message string) {
 
 func Close() {
 	if logFile != nil {
-		logFile.Close()
+		_ = logFile.Close() // Ignore error on final close
 		logFile = nil
 		logger = nil
 	}

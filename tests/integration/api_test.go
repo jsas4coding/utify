@@ -134,7 +134,7 @@ func TestColorTableOverride(t *testing.T) {
 func TestLoggingFunctionality(t *testing.T) {
 	// Test log target configuration
 	original := utify.GetLogTarget()
-	defer utify.SetLogTarget(original)
+	defer func() { _ = utify.SetLogTarget(original) }() // Ignore error in cleanup
 
 	tempTarget := "./test_integration.log"
 	defer func() {
@@ -173,7 +173,7 @@ func TestLogOnlyFunctions(t *testing.T) {
 	tempTarget := "./test_log_only.log"
 	defer func() {
 		utify.CloseLogger()
-		os.Remove(tempTarget)
+		_ = os.Remove(tempTarget) // Ignore error in cleanup
 	}()
 
 	err := utify.SetLogTarget(tempTarget)
