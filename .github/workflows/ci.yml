@@ -1,9 +1,9 @@
-name: Enhanced CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: ['**']  # All branches
-    tags: ['v*']      # All tags
+    branches: [main]  # Only on pushes to main
+    tags: ['v*']      # And on tag pushes (releases)
   pull_request:
     branches: [main]  # PRs to main
 

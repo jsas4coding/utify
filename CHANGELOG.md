@@ -14,8 +14,8 @@
 - **Enhanced Workflow Configuration**: Improved GitHub Actions setup
   - **Go Version Management**: All workflows now read Go version from `go.mod` file
   - **Smart CI Triggering**: Optimized to avoid duplicate runs while ensuring comprehensive coverage
-    - Runs on: push to any branch, pull requests to main, merges to main, releases
-    - Codecov uploads only on main branch updates and releases
+    - Runs on: pull requests to main, pushes to main, and tag pushes (releases)
+    - Codecov uploads on main branch updates and releases
   - **Updated Codecov Integration**: Upgraded to `codecov/codecov-action@v5` with better error handling
   - **Removed Problematic Dependencies**: Fixed security scanning by removing non-existent packages
 
