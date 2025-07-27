@@ -47,7 +47,7 @@ func TestLogMessage(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to set log target: %v", err)
 	}
-	
+
 	logger.LogMessage(messages.Success, "Test message")
 	logger.Close()
 
@@ -91,7 +91,7 @@ func TestLogOnly(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to set log target: %v", err)
 	}
-	
+
 	logger.LogOnly(messages.Error, "Error only message")
 	logger.Close()
 

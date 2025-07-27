@@ -29,7 +29,7 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-
             
@@ -37,12 +37,24 @@ jobs:
         run: |
           go mod verify
           go mod tidy
-          git diff --exit-code go.mod go.sum
+          # Check for changes in go.mod and go.sum (if it exists)
+          if [ -f go.sum ]; then
+            git diff --exit-code go.mod go.sum
+          else
+            git diff --exit-code go.mod
+          fi
           
       - name: Format check
         run: |
-          gofmt -s -l . | tee /tmp/gofmt.out
-          test ! -s /tmp/gofmt.out
+          # Check if any files need formatting
+          UNFORMATTED=$(gofmt -s -l .)
+          if [ -n "$UNFORMATTED" ]; then
+            echo "The following files are not properly formatted:"
+            echo "$UNFORMATTED"
+            echo "Please run 'gofmt -s -w .' to fix formatting issues"
+            exit 1
+          fi
+          echo "All files are properly formatted"
           
       - name: Build check
         run: go build -v ./...
@@ -67,7 +79,7 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-
             
@@ -112,7 +124,7 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum', '**/go.mod') }}
           restore-keys: |
             ${{ runner.os }}-go-${{ matrix.go-version }}-
             ${{ runner.os }}-go-

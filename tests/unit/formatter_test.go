@@ -50,7 +50,7 @@ func TestEcho(t *testing.T) {
 
 func TestEchoBold(t *testing.T) {
 	opts := options.Default().WithBold()
-	
+
 	output := testutil.CaptureOutput(func() {
 		_, _ = formatter.Echo(messages.Success, "Bold text", opts)
 	})
@@ -62,7 +62,7 @@ func TestEchoBold(t *testing.T) {
 
 func TestEchoItalic(t *testing.T) {
 	opts := options.Default().WithItalic()
-	
+
 	output := testutil.CaptureOutput(func() {
 		_, _ = formatter.Echo(messages.Success, "Italic text", opts)
 	})
@@ -74,7 +74,7 @@ func TestEchoItalic(t *testing.T) {
 
 func TestEchoNoColor(t *testing.T) {
 	opts := options.Default().WithoutColor()
-	
+
 	output := testutil.CaptureOutput(func() {
 		_, _ = formatter.Echo(messages.Success, "Plain text", opts)
 	})
@@ -86,7 +86,7 @@ func TestEchoNoColor(t *testing.T) {
 
 func TestEchoNoStyle(t *testing.T) {
 	opts := options.Default().WithBold().WithItalic().WithoutStyle()
-	
+
 	output := testutil.CaptureOutput(func() {
 		_, _ = formatter.Echo(messages.Success, "No style", opts)
 	})
@@ -99,20 +99,20 @@ func TestEchoNoStyle(t *testing.T) {
 func TestEchoCallback(t *testing.T) {
 	var callbackType messages.Type
 	var callbackText string
-	
+
 	callback := func(msgType messages.Type, text string) {
 		callbackType = msgType
 		callbackText = text
 	}
-	
+
 	opts := options.Default().WithCallback(callback)
-	
+
 	_, _ = formatter.Echo(messages.Success, "Testing callback", opts)
-	
+
 	if callbackType != messages.Success {
 		t.Errorf("Expected callback type to be %v, got %v", messages.Success, callbackType)
 	}
-	
+
 	if callbackText != "Testing callback" {
 		t.Errorf("Expected callback text to be %q, got %q", "Testing callback", callbackText)
 	}

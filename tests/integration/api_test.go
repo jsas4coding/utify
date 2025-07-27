@@ -43,7 +43,7 @@ func TestPublicAPICompatibility(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output := testutil.CaptureOutput(tt.fn)
-			
+
 			if !strings.Contains(output, "Test") {
 				t.Errorf("Expected output to contain 'Test', got %q", output)
 			}
@@ -73,7 +73,7 @@ func TestFormattedFunctions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output := testutil.CaptureOutput(tt.fn)
-			
+
 			if !strings.Contains(output, "Test") {
 				t.Errorf("Expected output to contain 'Test', got %q", output)
 			}

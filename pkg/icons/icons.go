@@ -48,32 +48,32 @@ var nerdFontIcons = map[messages.Type]string{
 
 // Regular Unicode icons (fallback)
 var regularIcons = map[messages.Type]string{
-	messages.Success:    "✅", // check mark
-	messages.Error:      "❌", // cross mark
-	messages.Warning:    "⚠️ ", // warning sign
-	messages.Info:       "ℹ️ ", // information
-	messages.Debug:      "🐛", // bug
-	messages.Critical:   "🚨", // rotating light
-	messages.Search:     "🔍", // magnifying glass
-	messages.Sync:       "🔄", // arrows counterclockwise
-	messages.Download:   "⬇️ ", // down arrow
-	messages.Refresh:    "🔃", // clockwise arrows
-	messages.Upload:     "⬆️ ", // up arrow
-	messages.Delete:     "🗑️ ", // wastebasket
-	messages.Git:        "📦", // package
-	messages.New:        "➕", // plus sign
-	messages.Edit:       "✏️ ", // pencil
-	messages.Update:     "🔄", // arrows counterclockwise
-	messages.Generation: "⚙️ ", // gear
-	messages.Find:       "🔎", // magnifying glass tilted right
-	messages.Link:       "🔗", // link
+	messages.Success:    "✅",    // check mark
+	messages.Error:      "❌",    // cross mark
+	messages.Warning:    "⚠️ ",  // warning sign
+	messages.Info:       "ℹ️ ",  // information
+	messages.Debug:      "🐛",    // bug
+	messages.Critical:   "🚨",    // rotating light
+	messages.Search:     "🔍",    // magnifying glass
+	messages.Sync:       "🔄",    // arrows counterclockwise
+	messages.Download:   "⬇️ ",  // down arrow
+	messages.Refresh:    "🔃",    // clockwise arrows
+	messages.Upload:     "⬆️ ",  // up arrow
+	messages.Delete:     "🗑️ ",  // wastebasket
+	messages.Git:        "📦",    // package
+	messages.New:        "➕",    // plus sign
+	messages.Edit:       "✏️ ",  // pencil
+	messages.Update:     "🔄",    // arrows counterclockwise
+	messages.Generation: "⚙️ ",  // gear
+	messages.Find:       "🔎",    // magnifying glass tilted right
+	messages.Link:       "🔗",    // link
 	messages.Unlink:     "⛓️‍💥", // broken chain
-	messages.Upgrade:    "⬆️ ", // up arrow
-	messages.Install:    "📥", // inbox tray
-	messages.Font:       "🔤", // latin letters
-	messages.Theme:      "🎨", // artist palette
-	messages.Icon:       "😀", // grinning face
-	messages.Default:    "●",  // bullet
+	messages.Upgrade:    "⬆️ ",  // up arrow
+	messages.Install:    "📥",    // inbox tray
+	messages.Font:       "🔤",    // latin letters
+	messages.Theme:      "🎨",    // artist palette
+	messages.Icon:       "😀",    // grinning face
+	messages.Default:    "●",    // bullet
 }
 
 var currentIconType IconType
@@ -97,31 +97,31 @@ func detectNerdFont() bool {
 	if nerdFontEnv := os.Getenv("NERD_FONT_ENABLED"); nerdFontEnv != "" {
 		return strings.ToLower(nerdFontEnv) == "true" || nerdFontEnv == "1"
 	}
-	
+
 	// Check environment variables commonly set by terminals with Nerd Font support
 	termProgram := os.Getenv("TERM_PROGRAM")
 	terminal := os.Getenv("TERMINAL")
 	term := os.Getenv("TERM")
-	
+
 	// Check for common terminals that typically use Nerd Fonts
 	nerdFontTerminals := []string{
 		"alacritty", "kitty", "wezterm", "hyper", "rio",
 		"ghostty", "konsole", "gnome-terminal", "tilix",
 		"terminator", "iterm", "warp", "tabby",
 	}
-	
+
 	termProgram = strings.ToLower(termProgram)
 	terminal = strings.ToLower(terminal)
 	term = strings.ToLower(term)
-	
+
 	for _, termName := range nerdFontTerminals {
-		if strings.Contains(termProgram, termName) || 
-		   strings.Contains(terminal, termName) ||
-		   strings.Contains(term, termName) {
+		if strings.Contains(termProgram, termName) ||
+			strings.Contains(terminal, termName) ||
+			strings.Contains(term, termName) {
 			return true
 		}
 	}
-	
+
 	// Check font-related environment variables
 	if font := os.Getenv("FONT"); font != "" {
 		font = strings.ToLower(font)
@@ -129,16 +129,16 @@ func detectNerdFont() bool {
 			return true
 		}
 	}
-	
+
 	// Additional checks for specific terminal features
 	// Some terminals set specific environment variables
-	if os.Getenv("KITTY_WINDOW_ID") != "" || 
-	   os.Getenv("ALACRITTY_SOCKET") != "" ||
-	   os.Getenv("WEZTERM_EXECUTABLE") != "" ||
-	   os.Getenv("ITERM_SESSION_ID") != "" {
+	if os.Getenv("KITTY_WINDOW_ID") != "" ||
+		os.Getenv("ALACRITTY_SOCKET") != "" ||
+		os.Getenv("WEZTERM_EXECUTABLE") != "" ||
+		os.Getenv("ITERM_SESSION_ID") != "" {
 		return true
 	}
-	
+
 	return false
 }
 

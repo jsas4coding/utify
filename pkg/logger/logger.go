@@ -21,11 +21,11 @@ type LogEntry struct {
 }
 
 var (
-	logFile   *os.File
-	logger    *log.Logger
-	logTarget string
+	logFile    *os.File
+	logger     *log.Logger
+	logTarget  string
 	binaryName string
-	enabled   = true
+	enabled    = true
 )
 
 func init() {
@@ -74,14 +74,14 @@ func SetLogTarget(target string) error {
 	if logFile != nil {
 		_ = logFile.Close() // Ignore error on close during reset
 	}
-	
+
 	logTarget = target
 	initLogger()
-	
+
 	if !enabled {
 		return fmt.Errorf("failed to initialize logger with target: %s", target)
 	}
-	
+
 	return nil
 }
 

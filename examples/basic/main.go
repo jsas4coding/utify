@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	
+
 	"github.com/jsas4coding/utify"
 )
 
@@ -24,7 +24,7 @@ func main() {
 	styledOpts := utify.OptionsDefault().
 		WithBold().
 		WithItalic()
-	
+
 	utify.Success("This message is bold and italic!", styledOpts)
 
 	// Using icons
