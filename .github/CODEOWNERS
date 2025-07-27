@@ -1,1 +1,14 @@
-* @jonatas-sas
+# Global ownership
+* @jsas4coding
+
+# Specific ownership patterns
+/.github/ @jsas4coding
+/pkg/ @jsas4coding  
+/tests/ @jsas4coding
+/examples/ @jsas4coding
+*.go @jsas4coding
+go.mod @jsas4coding
+go.sum @jsas4coding
+README.md @jsas4coding
+CHANGELOG.md @jsas4coding
+Makefile @jsas4coding

@@ -1,41 +1,248 @@
-name: Utify CI Tests
+name: Enhanced CI/CD Pipeline
+
 on:
   pull_request:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
+    tags: ['v*']
+
+env:
+  GO_VERSION: '1.24.5'
+
 jobs:
-  test:
-    name: Run Tests on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-      - name: Run Tests with Coverage
-        run: make coverage
-      - name: Upload Coverage Report
-        uses: codecov/codecov-action@v4
-        with:
-          files: coverage.out
-          token: ${{ secrets.CODECOV_TOKEN }}
-  lint:
-    name: Run Linters
+  # Quick validation job (runs first, fails fast)
+  validate:
+    name: Quick Validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
-      - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-      - name: Run linters
-        run: make lint
+          go-version: ${{ env.GO_VERSION }}
+          
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
+      - name: Verify dependencies
+        run: |
+          go mod verify
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+          
+      - name: Format check
+        run: |
+          gofmt -s -l . | tee /tmp/gofmt.out
+          test ! -s /tmp/gofmt.out
+          
+      - name: Build check
+        run: go build -v ./...
+
+  # Linting with multiple linters
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+            
+      - name: Run golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: latest
+          args: --timeout=5m
+          
+      - name: Run additional linters
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install github.com/securecodewarrior/sast-scan/cmd/sast-scan@latest
+          staticcheck ./...
+
+  # Comprehensive testing matrix
+  test:
+    name: Test (${{ matrix.os }}, Go ${{ matrix.go-version }})
+    runs-on: ${{ matrix.os }}
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: ['1.22', '1.23', '1.24']
+        include:
+          - os: ubuntu-latest
+            go-version: '1.24'
+            coverage: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go-version }}
+          
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ matrix.go-version }}-
+            ${{ runner.os }}-go-
+            
+      - name: Install dependencies
+        run: go mod download
+        
+      - name: Run unit tests
+        run: go test -v -race -timeout=5m ./tests/unit/...
+        
+      - name: Run integration tests  
+        run: go test -v -race -timeout=10m ./tests/integration/...
+        
+      - name: Run benchmarks
+        run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
+        
+      - name: Test with coverage (Ubuntu + latest Go only)
+        if: matrix.coverage
+        run: |
+          go test -v -race -coverprofile=coverage.out -covermode=atomic ./tests/...
+          go tool cover -html=coverage.out -o coverage.html
+          
+      - name: Upload coverage reports
+        if: matrix.coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.out
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          
+      - name: Upload coverage artifacts
+        if: matrix.coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: |
+            coverage.out
+            coverage.html
+
+  # Security scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run Gosec Security Scanner
+        uses: securecodewarrior/github-action-gosec@master
+        with:
+          args: '-fmt sarif -out gosec.sarif ./...'
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gosec.sarif
+          
+      - name: Dependency vulnerability scan
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+
+  # Build artifacts for releases
+  build:
+    name: Build Artifacts
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    if: startsWith(github.ref, 'refs/tags/')
+    strategy:
+      matrix:
+        include:
+          - GOOS: linux
+            GOARCH: amd64
+          - GOOS: linux  
+            GOARCH: arm64
+          - GOOS: darwin
+            GOARCH: amd64
+          - GOOS: darwin
+            GOARCH: arm64
+          - GOOS: windows
+            GOARCH: amd64
+            ext: .exe
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.GOOS }}
+          GOARCH: ${{ matrix.GOARCH }}
+        run: |
+          mkdir -p dist
+          go build -ldflags="-s -w -X main.version=${{ github.ref_name }}" \
+            -o dist/utify-${{ matrix.GOOS }}-${{ matrix.GOARCH }}${{ matrix.ext }} .
+            
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: utify-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
+          path: dist/
+
+  # Release creation
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/*/utify-*
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

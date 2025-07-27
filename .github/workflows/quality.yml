@@ -1,0 +1,137 @@
+name: Code Quality & Security
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better analysis
+          
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          
+      - name: Run comprehensive code analysis
+        run: |
+          # Install analysis tools
+          go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+          go install github.com/client9/misspell/cmd/misspell@latest
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install github.com/gordonklaus/ineffassign@latest
+          
+          # Run analysis
+          echo "=== Cyclomatic Complexity ===" 
+          gocyclo -over 10 .
+          
+          echo "=== Spell Check ==="
+          misspell -error .
+          
+          echo "=== Static Analysis ==="
+          staticcheck ./...
+          
+          echo "=== Ineffectual Assignments ==="
+          ineffassign ./...
+          
+      - name: Generate code metrics
+        run: |
+          echo "=== Code Metrics ==="
+          echo "Lines of Code:"
+          find . -name "*.go" -not -path "./vendor/*" | xargs wc -l | tail -1
+          
+          echo "Test Coverage:"
+          go test -coverprofile=coverage.out ./tests/... > /dev/null 2>&1
+          go tool cover -func=coverage.out | tail -1
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          
+      - name: Run Gosec Security Scanner
+        run: |
+          go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest
+          gosec -fmt json -out gosec-report.json ./...
+          
+      - name: Vulnerability check
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+          govulncheck ./...
+          
+      - name: Upload security reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            gosec-report.json
+            
+  performance-benchmark:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          
+      - name: Run performance benchmarks
+        run: |
+          go test -bench=. -benchmem -count=3 ./tests/benchmarks/... | tee benchmark.txt
+          
+      - name: Performance regression check
+        run: |
+          go install golang.org/x/perf/cmd/benchstat@latest
+          # Compare with previous results if available
+          if [ -f previous-benchmark.txt ]; then
+            benchstat previous-benchmark.txt benchmark.txt
+          fi
+          
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark.txt
