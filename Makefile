@@ -32,13 +32,35 @@ run: build
 # Run tests with verbose output
 test:
 	@echo "🧪 Running tests..."
-	@go test -v ./...
+	@go test -v ./tests/...
+
+# Run unit tests only
+test-unit:
+	@echo "🧪 Running unit tests..."
+	@go test -v ./tests/unit/...
+
+# Run integration tests only
+test-integration:
+	@echo "🧪 Running integration tests..."
+	@go test -v ./tests/integration/...
+
+# Run benchmarks
+bench:
+	@echo "⚡ Running benchmarks..."
+	@go test -bench=. ./tests/benchmarks/...
 
 # Run tests with coverage and generate report
 coverage:
 	@echo "📊 Running tests with coverage..."
-	@go test -coverprofile=coverage.out ./...
+	@go test -coverprofile=coverage.out ./tests/...
 	@go tool cover -func=coverage.out
+
+# Generate HTML coverage report
+coverage-html:
+	@echo "📊 Generating HTML coverage report..."
+	@go test -coverprofile=coverage.out ./tests/...
+	@go tool cover -html=coverage.out -o coverage.html
+	@echo "✅ Coverage report generated: coverage.html"
 
 # Clean up build and coverage files
 clean:
@@ -63,8 +85,12 @@ help:
 	@echo "📌 Available commands:"
 	@echo "  make build      - Build the binary"
 	@echo "  make run        - Build and run the application"
-	@echo "  make test       - Run tests"
+	@echo "  make test       - Run all tests"
+	@echo "  make test-unit  - Run unit tests only"
+	@echo "  make test-integration - Run integration tests only"
+	@echo "  make bench      - Run benchmarks"
 	@echo "  make coverage   - Run tests with coverage"
+	@echo "  make coverage-html - Generate HTML coverage report"
 	@echo "  make lint       - Run linters (requires golangci-lint)"
 	@echo "  make docs       - Run revive and go vet to validate docs"
 	@echo "  make clean      - Remove generated files"

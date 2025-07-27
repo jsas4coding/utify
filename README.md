@@ -1,20 +1,20 @@
 # Utify
 
-![Go Version](https://img.shields.io/github/go-mod/go-version/jonatas-sas/utify)
-![Stable Version](https://img.shields.io/github/v/release/jonatas-sas/utify)
-![License](https://img.shields.io/github/license/jonatas-sas/utify)
-![Tests](https://github.com/jonatas-sas/utify/actions/workflows/ci.yml/badge.svg)
-![Code Coverage](https://img.shields.io/codecov/c/github/jonatas-sas/utify)
-![Stars](https://img.shields.io/github/stars/jonatas-sas/utify?style=social)
+![Go Version](https://img.shields.io/github/go-mod/go-version/jsas4coding/utify)
+![Stable Version](https://img.shields.io/github/v/release/jsas4coding/utify)
+![License](https://img.shields.io/github/license/jsas4coding/utify)
+![Tests](https://github.com/jsas4coding/utify/actions/workflows/ci.yml/badge.svg)
+![Code Coverage](https://img.shields.io/codecov/c/github/jsas4coding/utify)
+![Stars](https://img.shields.io/github/stars/jsas4coding/utify?style=social)
 
-**Utify** is a Go library for displaying styled messages in the terminal, with support for color, formatting, error handling, and custom callbacks.
+**Utify** is a powerful Go library for displaying styled messages in the terminal with comprehensive logging support. Features include colored terminal output, structured JSON logging, configurable log targets, and extensive customization options.
 
 ---
 
 ## 📦 Installation
 
 ```sh
-go get github.com/jonatas-sas/utify
+go get github.com/jsas4coding/utify
 ```
 
 ---
@@ -25,12 +25,13 @@ go get github.com/jonatas-sas/utify
 package main
 
 import (
-	"github.com/jonatas-sas/utify"
+	"github.com/jsas4coding/utify"
 )
 
 func main() {
 	opts := utify.OptionsDefault()
 
+	// Print to terminal AND log to file
 	utify.Success("Operation completed!", opts)
 	utify.Error("An error occurred!", opts)
 	utify.Warning("Pay attention!", opts)
@@ -40,7 +41,7 @@ func main() {
 }
 ```
 
-All methods print the message and log it. Methods that represent errors (`Error`, `Critical`, `Debug`) return the sentinel `utify.ErrSilent`.
+All methods print the message to stdout AND log it to a structured JSON log file. Methods that represent errors (`Error`, `Critical`, `Debug`) return the sentinel `utify.ErrSilent`.
 
 To get the output and handle it manually, use the `Get*` functions:
 
@@ -59,7 +60,8 @@ Customize output using chained methods:
 | `.WithBold()`       | Makes the message **bold**                           |
 | `.WithItalic()`     | Makes the message _italic_                           |
 | `.WithoutColor()`   | Disables all ANSI color codes                        |
-| `.WithoutIcon()`    | Disables icons (future-proof option)                 |
+| `.WithIcon()`       | Enables icons for messages                          |
+| `.WithoutIcon()`    | Disables icons for messages                         |
 | `.WithoutStyle()`   | Disables all styling (bold, italic, etc.)            |
 | `.WithExit()`       | Exits the program (`os.Exit(1)`) after showing error |
 | `.WithCallback(fn)` | Executes callback after message (disables exit)      |
@@ -69,9 +71,131 @@ Customize output using chained methods:
 ```go
 opts := utify.OptionsDefault().
   WithBold().
+  WithIcon().
   WithoutColor()
 
-utify.Warning("This is bold but no color", opts)
+utify.Warning("This is bold with icon but no color", opts)
+```
+
+---
+
+## 🎯 Icon System
+
+Utify includes a smart icon system with automatic Nerd Font detection and Unicode fallback:
+
+### Features
+- **Automatic Detection**: Detects Nerd Font capability in supported terminals
+- **Fallback Support**: Uses regular Unicode emoji when Nerd Fonts aren't available
+- **Manual Control**: Force specific icon types or disable icons entirely
+
+### Usage
+
+```go
+// Enable icons (uses auto-detection)
+opts := utify.OptionsDefault().WithIcon()
+utify.Success("Operation completed!", opts)
+
+// Disable icons
+opts := utify.OptionsDefault().WithoutIcon()
+utify.Success("No icon here", opts)
+```
+
+### Manual Icon Control
+
+```go
+// Force Nerd Font icons (if available in terminal)
+utify.ForceNerdFont()
+
+// Force regular Unicode icons
+utify.ForceRegularIcons()
+
+// Disable all icons
+utify.DisableIcons()
+
+// Check current settings
+fmt.Printf("Icon type: %v\n", utify.GetIconType())
+fmt.Printf("Nerd Font detected: %v\n", utify.IsNerdFontDetected())
+```
+
+### Environment Variable
+
+Set `NERD_FONT_ENABLED=true` to force Nerd Font usage:
+
+```bash
+NERD_FONT_ENABLED=true ./my-app
+```
+
+### Icon Types
+
+| Icon Type | Description | Example |
+|-----------|-------------|---------|
+| Regular   | Unicode emoji (default) | ✅ ❌ ⚠️ ℹ️ |
+| Nerd Font | Font Awesome icons | Various Nerd Font glyphs |
+| None      | No icons displayed | (text only) |
+
+**Note**: Nerd Font icons require a compatible Nerd Font installed in your terminal. If icons appear blank, your terminal doesn't have the required font glyphs.
+
+---
+
+## 📝 Structured JSON Logging
+
+Utify automatically logs all messages to a structured JSON log file with configurable targets:
+
+### Default Behavior
+- **Default location**: `/var/log/{binary_name}.log`
+- **Fallback**: Current directory if `/var/log` is not writable
+- **Format**: Structured JSON with timestamp, level, message, type, and binary name
+
+### Log Configuration
+
+```go
+// Change log file location
+err := utify.SetLogTarget("./my-app.log")
+if err != nil {
+    fmt.Printf("Failed to set log target: %v\n", err)
+}
+
+// Get current log location
+fmt.Printf("Logging to: %s\n", utify.GetLogTarget())
+
+// Disable/enable logging
+utify.SetLoggingEnabled(false)  // Disable logging
+utify.SetLoggingEnabled(true)   // Re-enable logging
+
+// Check if logging is enabled
+if utify.IsLoggingEnabled() {
+    fmt.Println("Logging is active")
+}
+
+// Clean up (close log file)
+defer utify.CloseLogger()
+```
+
+### Log-Only Functions
+
+Use these functions to log messages WITHOUT printing to stdout:
+
+```go
+// Log-only functions (no terminal output)
+utify.LogSuccess("Operation completed silently")
+utify.LogError("Error logged only")
+utify.LogInfo("Background info logged")
+
+// Formatted log-only functions
+utify.LogSuccessf("Processed %d items", 42)
+utify.LogErrorf("Failed to connect to %s", "database")
+```
+
+### JSON Log Format
+
+```json
+{
+  "timestamp": "2025-07-27T16:30:45Z",
+  "level": "SUCCESS",
+  "message": "Operation completed",
+  "type": "success",
+  "binary": "my-app"
+}
 ```
 
 ---
@@ -97,32 +221,50 @@ utify.Critical("Oops!", opts)
 
 ## 🧹 Available Methods
 
-### ✅ General Status
+### 📺 Output Functions (Print + Log)
 
-- `Success(text string, opts *Options)`
-- `Error(text string, opts *Options)`
-- `Warning(text string, opts *Options)`
-- `Info(text string, opts *Options)`
-- `Debug(text string, opts *Options)`
-- `Critical(text string, opts *Options)`
+**General Status**
+- `Success(text, opts)`, `Error(text, opts)`, `Warning(text, opts)`
+- `Info(text, opts)`, `Debug(text, opts)`, `Critical(text, opts)`
 
-### 🛠️ Common Actions
+**Common Actions**
+- `Delete(text, opts)`, `Update(text, opts)`, `Install(text, opts)`
+- `Upgrade(text, opts)`, `Edit(text, opts)`, `New(text, opts)`
 
-- `Delete(...)`, `Update(...)`, `Install(...)`, `Upgrade(...)`, `Edit(...)`, `New(...)`
+**I/O Operations**
+- `Download(text, opts)`, `Upload(text, opts)`, `Sync(text, opts)`, `Search(text, opts)`
 
-### 🔄 I/O Operations
+### 📝 Log-Only Functions (Log Only, No Terminal Output)
 
-- `Download(...)`, `Upload(...)`, `Sync(...)`, `Search(...)`
+**General Status**
+- `LogSuccess(text)`, `LogError(text)`, `LogWarning(text)`
+- `LogInfo(text)`, `LogDebug(text)`, `LogCritical(text)`
 
-Each of the above also has a `*f` version:
+**Common Actions**
+- `LogDelete(text)`, `LogUpdate(text)`, `LogInstall(text)`
+- `LogUpgrade(text)`, `LogEdit(text)`, `LogNew(text)`
+
+**I/O Operations**
+- `LogDownload(text)`, `LogUpload(text)`, `LogSync(text)`, `LogSearch(text)`
+
+### 🔧 Get Functions (Return Values)
+
+- `GetSuccess(text, opts) (string, error)`
+- `GetError(text, opts) (string, error)`
+- And all other message types...
+
+### 📝 Formatted Versions
+
+Each function has a formatted version with `f` suffix:
 
 ```go
+// Output + Log
 utify.Successf("Success %d: %s", opts, 200, "OK")
-```
 
-For full control and output, use `Get*` or `Get*f` versions:
+// Log only
+utify.LogSuccessf("Processed %d items", 42)
 
-```go
+// Get formatted
 result, err := utify.GetCriticalf("Crash code %d", opts, 42)
 ```
 
@@ -154,16 +296,32 @@ utify.ErrSilent
 
 ---
 
-## ✅ Testing
+## 🧪 Testing
 
+**Run all tests:**
 ```bash
-go test -v
+make test
 ```
 
-To check coverage:
-
+**Run specific test suites:**
 ```bash
-go test -coverprofile=cover.out && go tool cover -html=cover.out
+make test-unit          # Unit tests only
+make test-integration   # Integration tests only
+make bench              # Performance benchmarks
+```
+
+**Coverage reports:**
+```bash
+make coverage           # Text coverage report
+make coverage-html      # HTML coverage report
+```
+
+**Other commands:**
+```bash
+make build              # Build the project
+make lint               # Run linters (requires golangci-lint)
+make docs               # Validate documentation
+make clean              # Clean up artifacts
 ```
 
 ---
@@ -174,6 +332,45 @@ Licensed under the [MIT License](LICENSE).
 
 ---
 
+## 🏗️ Project Structure
+
+```
+utify/
+├── pkg/                    # Core packages
+│   ├── colors/            # ANSI color constants
+│   ├── messages/          # Message type definitions
+│   ├── options/           # Configuration options
+│   ├── formatter/         # Output formatting logic
+│   └── logger/            # Structured JSON logging
+├── internal/tests/        # Test utilities
+├── examples/              # Usage examples
+│   ├── basic/            # Basic usage
+│   ├── colors/           # Custom colors
+│   ├── callbacks/        # Callback functionality
+│   └── logging-demo/     # Logging examples
+└── tests/                 # Test suites
+    ├── unit/             # Unit tests
+    ├── integration/      # Integration tests
+    └── benchmarks/       # Performance tests
+```
+
+## 🚀 What's New in v1.4.0
+
+- **Modular Architecture**: Complete restructure from single-file to organized packages
+- **Structured JSON Logging**: Automatic logging to configurable file targets
+- **Log-Only Functions**: New `Log*()` functions for logging without terminal output
+- **Icon System**: Smart icon support with Nerd Font detection and Unicode fallback
+- **Better Testing**: Comprehensive unit, integration, and benchmark tests
+- **Enhanced Examples**: Organized examples with dedicated demos
+- **Improved Documentation**: Updated with new features and architecture
+
 ## 🤝 Contributing
 
 Feel free to open issues, discuss features, or submit PRs! Let's make terminals beautiful, together.
+
+**Development:**
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Run `make test` and `make docs` to ensure quality
+5. Submit a pull request

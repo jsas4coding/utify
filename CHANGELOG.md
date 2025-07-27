@@ -1,5 +1,110 @@
 # Changelog
 
+## [1.4.0] - 2025-07-27
+
+### 🚀 Major Features
+
+- **Modular Architecture**: Complete restructure from single-file to proper Go package organization:
+  - `pkg/colors/`: ANSI color constants and management
+  - `pkg/messages/`: Message types and definitions
+  - `pkg/options/`: Options struct with fluent API
+  - `pkg/formatter/`: Core formatting logic
+  - `pkg/logger/`: Structured JSON logging system
+  - `internal/tests/`: Test utilities
+  - Organized test structure: unit, integration, and benchmarks
+
+- **Structured JSON Logging**: Full logging system with configurable targets:
+  - Default path: `/var/log/{binary_name}.log` (with fallback to current directory)
+  - JSON format with timestamp, level, message, type, and binary name
+  - Configurable log target: `SetLogTarget(path)`
+  - Enable/disable logging: `SetLoggingEnabled(bool)`
+  - Log file handle management: `CloseLogger()`
+
+- **Log-Only Functions**: New API for logging without stdout output:
+  - `LogSuccess()`, `LogError()`, `LogWarning()`, `LogInfo()`, `LogDebug()`, `LogCritical()`
+  - `LogDelete()`, `LogUpdate()`, `LogInstall()`, `LogUpgrade()`, `LogEdit()`, `LogNew()`
+  - `LogDownload()`, `LogUpload()`, `LogSync()`, `LogSearch()`
+  - Formatted versions: `LogSuccessf()`, `LogErrorf()`, etc.
+
+- **Icon System**: Smart icon display with Nerd Font support:
+  - Automatic Nerd Font detection via environment variables (`TERM_PROGRAM`, `NERD_FONT_DETECTED`)
+  - Fallback to regular Unicode icons when Nerd Fonts are not available
+  - User control: `ForceNerdFont()`, `ForceRegularIcons()`, `DisableIcons()`
+  - Integration with existing options: `WithIcon()`, `WithoutIcon()`
+
+### 🔧 Breaking Changes
+
+- **Package Name**: Changed from `github.com/jonatas-sas/utify` to `github.com/jsas4coding/utify`
+- **Go Version**: Bumped to Go 1.24.5
+- **Test Structure**: Moved `internal/testutil/` to `internal/tests/` with package name change
+
+### ✨ Improvements
+
+- **Fixed Double Message Bug**: Eliminated duplicate message printing
+- **Comprehensive Testing**: Added unit tests, integration tests, and benchmarks
+- **Better Examples**: Organized examples into separate directories with dedicated demos
+- **Enhanced Documentation**: Updated CLAUDE.md with new architecture details
+- **Lint Configuration**: Fixed and simplified revive configuration
+
+### 📦 New API Functions
+
+```go
+// Logging configuration
+SetLogTarget(path string) error
+GetLogTarget() string
+SetLoggingEnabled(enabled bool)
+IsLoggingEnabled() bool
+CloseLogger()
+
+// Log-only functions (no stdout output)
+LogSuccess(text string)
+LogError(text string)
+// ... and all other message types
+
+// Formatted log-only functions
+LogSuccessf(text string, args ...any)
+LogErrorf(text string, args ...any)
+// ... and all other message types
+
+// Icon control functions
+ForceNerdFont()
+ForceRegularIcons()
+DisableIcons()
+GetIconType() IconType
+SetIconType(IconType)
+```
+
+### 🧪 Testing
+
+- **Unit Tests**: Complete coverage for all packages
+- **Integration Tests**: API compatibility and functionality verification
+- **Benchmarks**: Performance testing for all core functions
+- **Test Utilities**: Centralized test helpers for output capture
+
+### 📁 Project Structure
+
+```
+utify/
+├── pkg/                    # Core packages
+│   ├── colors/            # ANSI colors
+│   ├── messages/          # Message types
+│   ├── options/           # Configuration
+│   ├── formatter/         # Output formatting
+│   └── logger/            # JSON logging
+├── internal/tests/        # Test utilities
+├── examples/              # Usage examples
+│   ├── basic/
+│   ├── colors/
+│   ├── callbacks/
+│   └── logging-demo/
+└── tests/                 # Test suites
+    ├── unit/
+    ├── integration/
+    └── benchmarks/
+```
+
+---
+
 ## [1.3.1] - 2025-03-23
 
 ### Added

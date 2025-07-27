@@ -1,3 +1,3 @@
-module github.com/jonatas-sas/utify
+module github.com/jsas4coding/utify
 
-go 1.24.1
+go 1.24.5
