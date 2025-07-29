@@ -105,7 +105,7 @@ jobs:
           go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
           git-chglog -o CHANGELOG.md ${GITHUB_REF#refs/tags/}
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get-version.outputs.version }}
           name: Release ${{ steps.get-version.outputs.version }}
