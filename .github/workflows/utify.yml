@@ -1,0 +1,134 @@
+name: Utify CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Verify modules and tidy
+        run: |
+          go mod verify
+          go mod tidy
+          if [ -f go.sum ]; then
+            git diff --exit-code go.mod go.sum
+          else
+            git diff --exit-code go.mod
+          fi
+      - name: Run unit tests
+        run: go test -v -race -timeout=5m -coverprofile=coverage.out ./tests/unit/...
+      - name: Run integration tests
+        run: go test -v -race -timeout=10m ./tests/integration/...
+      - name: Run benchmarks
+        run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
+      - name: Upload coverage to Codecov
+        if: github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.out
+          flags: unittests
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  quality:
+    name: Code Quality & Security
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run static analysis
+        run: |
+          go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          golangci-lint run ./...
+          gocyclo -over 15 .
+
+  release:
+    name: Validate & Prepare Release
+    runs-on: ubuntu-latest
+    needs: validate
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+      - name: Validate tag format
+        run: |
+          if ! [[ "${{ steps.get-version.outputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+            echo "Invalid version format" && exit 1
+          fi
+      - name: Build all examples
+        run: |
+          mkdir -p dist/examples
+          for dir in ./examples/*/ ; do
+            name=$(basename "$dir")
+            go build -o "dist/examples/$name" "$dir"
+          done
+      - name: Generate changelog
+        run: |
+          go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
+          git-chglog -o CHANGELOG.md ${GITHUB_REF#refs/tags/}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get-version.outputs.version }}
+          name: Release ${{ steps.get-version.outputs.version }}
+          body_path: CHANGELOG.md
+          files: dist/examples/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-packages:
+    name: Publish Packages
+    runs-on: ubuntu-latest
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Publish to Go Module Proxy
+        run: |
+          VERSION="${{ needs.release.outputs.version }}"
+          echo "Publishing ${VERSION} to Go module proxy..."
+          GOPROXY=proxy.golang.org go list -m github.com/jsas4coding/utify@${VERSION}
+      - name: Confirm publication
+        run: echo "Release ${{ needs.release.outputs.version }} published successfully!"
+
