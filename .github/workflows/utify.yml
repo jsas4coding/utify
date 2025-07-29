@@ -27,7 +27,7 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Verify modules and tidy
@@ -45,13 +45,12 @@ jobs:
         run: go test -v -race -timeout=10m ./tests/integration/...
       - name: Run benchmarks
         run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
-      - name: Upload coverage to Codecov
+      - name: Upload coverage reports to Codecov
         if: github.ref == 'refs/heads/main'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
-          files: coverage.out
-          flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
+          slug: jsas4coding/utify
 
   quality:
     name: Code Quality & Security
@@ -69,7 +68,7 @@ jobs:
           path: |
             ~/.cache/go-build
             ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum', '**/go.mod') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-go-
       - name: Run static analysis
@@ -105,13 +104,17 @@ jobs:
             name=$(basename "$dir")
             go build -o "dist/examples/$name" "$dir"
           done
+      - name: Extract changelog for release
+        id: changelog
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/}"
+          awk '/## \['"${VERSION}"'\]/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md > RELEASE_BODY.md
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get-version.outputs.version }}
-          name: Release ${{ steps.get-version.outputs.version }}
-          body: |
-            This release includes the latest built examples.
+          name: Utify Release ${{ steps.get-version.outputs.version }}
+          body_path: RELEASE_BODY.md
           files: dist/examples/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -126,6 +129,14 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.mod') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-go-
       - name: Publish to Go Module Proxy
         run: |
           VERSION="${{ needs.release.outputs.version }}"
@@ -133,3 +144,4 @@ jobs:
           GOPROXY=proxy.golang.org go list -m github.com/jsas4coding/utify@${VERSION}
       - name: Confirm publication
         run: echo "Release ${{ needs.release.outputs.version }} published successfully!"
+
