@@ -2,6 +2,13 @@
 
 ## [1.4.3] - 2025-07-29
 
+### 🔧 Bug Fixes
+
+## [1.4.4] - 2025-07-29
+
+- **CI/CD:** Release workflow now updates existing GitHub releases instead of creating duplicates.
+- **Artifacts:** Ensures latest built examples are attached when updating a release.
+
 ### 🚀 Features & Improvements
 
 - **CI/CD Pipeline Enhancements**:
@@ -28,7 +35,7 @@
 
 - **Code Refactoring**: Reduced cyclomatic complexity for better maintainability
   - Refactored `detectNerdFont()` function: Split complex logic into 4 focused functions
-  - Refactored `Echo()` function: Split formatting logic into 6 specialized functions  
+  - Refactored `Echo()` function: Split formatting logic into 6 specialized functions
   - All functions now have complexity ≤ 9 (under threshold of 10)
 
 ### 🔧 CI/CD Improvements
@@ -189,13 +196,11 @@ utify/
 ### Changed
 
 - **CI configuration refined**:
-
   - Now runs only on `pull_request`, `pull_request_target`, and `push` to tags.
   - Removed unnecessary runs on `push` to `main`.
   - Still tests across `ubuntu-latest`, `macos-latest`, and `windows-latest`.
 
 - **Linting setup updated**:
-
   - Deprecated linters (`deadcode`, `varcheck`, `structcheck`) removed.
   - Migrated from `output.format` → `output.formats` in `golangci-lint` config.
   - Replaced `run.skip-dirs` with `issues.exclude-dirs`.
