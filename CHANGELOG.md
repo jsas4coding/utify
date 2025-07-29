@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.4.9] - 2025-07-29
+
+### 🧪 Testing
+
+- Added **new unit tests** for `utify.go`, improving coverage and reliability.
+- Expanded tests to cover **logging-only functions** and **"Get" functions**.
+
+### 📚 Documentation
+
+- **Improved doccomments** in `utify.go`:
+  - Added comprehensive package-level documentation.
+  - Documented customization features for colors, icons, and logging.
+  - Clarified usage examples for:
+    - Direct output functions (e.g., `utify.Success()`)
+    - Formatted functions (e.g., `utify.Infof()`)
+    - Getters (e.g., `utify.GetSuccess()`)
+    - Logging-only functions (e.g., `utify.LogInfo()`)
+
+### 🛠 Maintenance
+
+- Minor refactoring for **consistency across all message functions**.
+- Updated **aliases** for backward compatibility (`MessageType`, `Options`).
+
 ## [1.4.8] - 2025-07-29
 
 ### 🔒 Security

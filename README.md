@@ -4,7 +4,7 @@
 ![Stable Version](https://img.shields.io/github/v/release/jsas4coding/utify)
 ![License](https://img.shields.io/github/license/jsas4coding/utify)
 ![CI/CD](https://img.shields.io/github/actions/workflow/status/jsas4coding/utify/utify.yml?label=CI%2FCD&logo=githubactions&logoColor=white)
-![CodeQL](https://img.shields.io/github/actions/workflow/status/jsas4coding/utify/codeql-analysis.yml?label=CodeQL%20Security&logo=github&color=orange)
+![CodeQL](https://img.shields.io/github/actions/workflow/status/jsas4coding/utify/codeql-analysis.yml?label=CodeQL&style=flat-square)
 ![Coverage](https://img.shields.io/codecov/c/github/jsas4coding/utify?logo=codecov&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/jsas4coding/utify?style=social)
 
