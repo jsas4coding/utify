@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.6] - 2025-07-29
+
+### 🔧 Fixes
+
+- **CI/CD:** Corrected `release` job to export the version as an output for dependent jobs.
+- **Release Updates:** Ensured the GitHub release step can update existing releases with new artifacts.
+
+---
+
+## [1.4.5] - 2025-07-29
+
+### 🔧 Fixes
+
+- **Permissions:** Added `permissions: contents: write` to enable release updates.
+
+---
+
 ## [1.4.4] - 2025-07-29
 
 ### 🔧 Bug Fixes
