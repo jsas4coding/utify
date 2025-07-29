@@ -100,17 +100,16 @@ jobs:
             name=$(basename "$dir")
             go build -o "dist/examples/$name" "$dir"
           done
-      - name: Generate changelog
-        run: |
-          go install github.com/git-chglog/git-chglog/cmd/git-chglog@latest
-          git-chglog -o CHANGELOG.md ${GITHUB_REF#refs/tags/}
-      - name: Create GitHub Release
+      - name: Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get-version.outputs.version }}
           name: Release ${{ steps.get-version.outputs.version }}
-          body_path: CHANGELOG.md
+          body: |
+            This release was updated with new build artifacts.
           files: dist/examples/*
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
