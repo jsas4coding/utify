@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.4.3] - 2025-07-29
+
+### 🚀 Features & Improvements
+
+- **CI/CD Pipeline Enhancements**:
+  - Unified workflows into `cicd.yml` combining CI, quality checks, examples build, and release automation.
+  - Added build process for `examples/` with automatic artifact upload for quick testing.
+  - Integrated Codecov coverage reports for main branch pushes.
+  - Separated unit, integration, and benchmark tests with clear visibility.
+  - Automated Go module publishing to `proxy.golang.org` after tagged releases.
+
+- **Release Automation**:
+  - Added automatic changelog generation using `git-chglog`.
+  - GitHub Releases now include compiled example binaries.
+
+### 🧪 Quality & Security
+
+- **Enhanced Quality Checks**: Strengthened static analysis with `golangci-lint` and cyclomatic complexity validation.
+- **Security**: Removed outdated dependencies in workflows and improved token usage for uploads.
+
+---
+
 ## [1.4.2] - 2025-07-27
 
 ### ⚡ Performance & Code Quality
