@@ -1,6 +1,8 @@
 package unit
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/jsas4coding/utify"
@@ -32,9 +34,9 @@ func TestBasicOutputFunctions(t *testing.T) {
 		{"Sync", utify.Sync},
 		{"Search", utify.Search},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt := tt
 			tt.fn("Test message", defaultOpts())
 		})
 	}
@@ -62,9 +64,9 @@ func TestFormattedOutputFunctions(t *testing.T) {
 		{"Syncf", utify.Syncf},
 		{"Searchf", utify.Searchf},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt := tt
 			tt.fn("Formatted %s", defaultOpts(), "message")
 		})
 	}
@@ -92,7 +94,6 @@ func TestGetFunctions(t *testing.T) {
 		{"GetSync", utify.GetSync},
 		{"GetSearch", utify.GetSearch},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := tt.fn("Test message", defaultOpts())
@@ -125,10 +126,51 @@ func TestLogOnlyFunctions(t *testing.T) {
 		{"LogSync", utify.LogSync},
 		{"LogSearch", utify.LogSearch},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			tt := tt
 			tt.fn("Log-only message")
 		})
 	}
+}
+
+func TestConfigFunctions(t *testing.T) {
+	t.Run("SetColorTable", func(t *testing.T) {
+		utify.SetColorTable(map[string]string{
+			"Red":  "#FF0000",
+			"Blue": "#0000FF",
+		})
+	})
+
+	t.Run("SetLogTargetAndGet", func(t *testing.T) {
+		tmpfile := filepath.Join(os.TempDir(), "utify_test.log")
+		err := utify.SetLogTarget(tmpfile)
+		if err != nil {
+			t.Fatalf("SetLogTarget failed: %v", err)
+		}
+		got := utify.GetLogTarget()
+		if got != tmpfile {
+			t.Errorf("expected log target %s, got %s", tmpfile, got)
+		}
+		utify.CloseLogger()
+	})
+
+	t.Run("SetLoggingEnabled", func(t *testing.T) {
+		utify.SetLoggingEnabled(true)
+		if !utify.IsLoggingEnabled() {
+			t.Error("expected logging to be enabled")
+		}
+		utify.SetLoggingEnabled(false)
+		if utify.IsLoggingEnabled() {
+			t.Error("expected logging to be disabled")
+		}
+	})
+
+	t.Run("ForceIconsModes", func(t *testing.T) {
+		utify.ForceNerdFont()
+		utify.ForceRegularIcons()
+		utify.DisableIcons()
+		_ = utify.IsNerdFontDetected()
+		_ = utify.GetIconType()
+	})
 }
