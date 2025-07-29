@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.7] - 2025-07-29
+
+### 🔧 Fixes & Improvements
+
+- **CI/CD:** Updated Codecov upload step to use `codecov/codecov-action@v5` with explicit `slug` and `token` for reliable coverage reporting.
+- **Release Automation:** Enhanced release workflow to extract the correct changelog section automatically and set formatted release titles.
+- **Caching:** Updated cache keys across jobs to include `github.sha`, ensuring cache invalidation on code changes.
+
+---
+
 ## [1.4.6] - 2025-07-29
 
 ### 🔧 Fixes
