@@ -1,13 +1,13 @@
 # Changelog
 
-## [1.4.3] - 2025-07-29
+## [1.4.4] - 2025-07-29
 
 ### 🔧 Bug Fixes
 
-## [1.4.4] - 2025-07-29
-
 - **CI/CD:** Release workflow now updates existing GitHub releases instead of creating duplicates.
 - **Artifacts:** Ensures latest built examples are attached when updating a release.
+
+## [1.4.3] - 2025-07-29
 
 ### 🚀 Features & Improvements
 
