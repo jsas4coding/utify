@@ -1,3 +1,6 @@
+permissions:
+  contents: write
+
 name: Utify CI/CD Pipeline
 
 on:
