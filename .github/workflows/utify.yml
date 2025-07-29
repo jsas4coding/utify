@@ -39,12 +39,17 @@ jobs:
           else
             git diff --exit-code go.mod
           fi
-      - name: Run unit tests
-        run: go test -v -race -timeout=5m -coverprofile=coverage.out ./tests/unit/...
+      - name: Run tests with full coverage
+        run: go test -v -race -timeout=5m -coverpkg=./... -coverprofile=coverage.out ./...
       - name: Run integration tests
-        run: go test -v -race -timeout=10m ./tests/integration/...
+        run: go test -v -race -timeout=10m -coverpkg=./... ./tests/integration/...
       - name: Run benchmarks
         run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
+      - name: Fail if coverage is zero
+        run: |
+          if [ $(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//') = 0 ]; then
+            echo "Coverage is 0% - failing." && exit 1
+          fi
       - name: Upload coverage reports to Codecov
         if: github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v5

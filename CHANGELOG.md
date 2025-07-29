@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.4.8] - 2025-07-29
+
+### 🔒 Security
+
+- **Added CodeQL Analysis:** Introduced automated CodeQL scans for Go, running on pushes, pull requests, and weekly schedules.
+
+### 🧪 Testing
+
+- **Enhanced Coverage:** Expanded coverage reporting to include all Go packages and added validation to prevent zero-coverage reports.
+
 ## [1.4.7] - 2025-07-29
 
 ### 🔧 Fixes & Improvements
