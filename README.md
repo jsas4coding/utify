@@ -3,8 +3,9 @@
 ![Go Version](https://img.shields.io/github/go-mod/go-version/jsas4coding/utify)
 ![Stable Version](https://img.shields.io/github/v/release/jsas4coding/utify)
 ![License](https://img.shields.io/github/license/jsas4coding/utify)
-![Tests](https://github.com/jsas4coding/utify/actions/workflows/ci.yml/badge.svg)
-![Code Coverage](https://img.shields.io/codecov/c/github/jsas4coding/utify)
+![CI/CD](https://img.shields.io/github/actions/workflow/status/jsas4coding/utify/utify.yml?label=CI%2FCD&logo=githubactions&logoColor=white)
+![CodeQL](https://img.shields.io/github/actions/workflow/status/jsas4coding/utify/codeql-analysis.yml?label=CodeQL%20Security&logo=github&color=orange)
+![Coverage](https://img.shields.io/codecov/c/github/jsas4coding/utify?logo=codecov&logoColor=white)
 ![Stars](https://img.shields.io/github/stars/jsas4coding/utify?style=social)
 
 **Utify** is a powerful Go library for displaying styled messages in the terminal with comprehensive logging support. Features include colored terminal output, structured JSON logging, configurable log targets, and extensive customization options.
@@ -60,8 +61,8 @@ Customize output using chained methods:
 | `.WithBold()`       | Makes the message **bold**                           |
 | `.WithItalic()`     | Makes the message _italic_                           |
 | `.WithoutColor()`   | Disables all ANSI color codes                        |
-| `.WithIcon()`       | Enables icons for messages                          |
-| `.WithoutIcon()`    | Disables icons for messages                         |
+| `.WithIcon()`       | Enables icons for messages                           |
+| `.WithoutIcon()`    | Disables icons for messages                          |
 | `.WithoutStyle()`   | Disables all styling (bold, italic, etc.)            |
 | `.WithExit()`       | Exits the program (`os.Exit(1)`) after showing error |
 | `.WithCallback(fn)` | Executes callback after message (disables exit)      |
@@ -84,6 +85,7 @@ utify.Warning("This is bold with icon but no color", opts)
 Utify includes a smart icon system with automatic Nerd Font detection and Unicode fallback:
 
 ### Features
+
 - **Automatic Detection**: Detects Nerd Font capability in supported terminals
 - **Fallback Support**: Uses regular Unicode emoji when Nerd Fonts aren't available
 - **Manual Control**: Force specific icon types or disable icons entirely
@@ -127,11 +129,11 @@ NERD_FONT_ENABLED=true ./my-app
 
 ### Icon Types
 
-| Icon Type | Description | Example |
-|-----------|-------------|---------|
-| Regular   | Unicode emoji (default) | ✅ ❌ ⚠️ ℹ️ |
-| Nerd Font | Font Awesome icons | Various Nerd Font glyphs |
-| None      | No icons displayed | (text only) |
+| Icon Type | Description             | Example                  |
+| --------- | ----------------------- | ------------------------ |
+| Regular   | Unicode emoji (default) | ✅ ❌ ⚠️ ℹ️              |
+| Nerd Font | Font Awesome icons      | Various Nerd Font glyphs |
+| None      | No icons displayed      | (text only)              |
 
 **Note**: Nerd Font icons require a compatible Nerd Font installed in your terminal. If icons appear blank, your terminal doesn't have the required font glyphs.
 
@@ -142,6 +144,7 @@ NERD_FONT_ENABLED=true ./my-app
 Utify automatically logs all messages to a structured JSON log file with configurable targets:
 
 ### Default Behavior
+
 - **Default location**: `/var/log/{binary_name}.log`
 - **Fallback**: Current directory if `/var/log` is not writable
 - **Format**: Structured JSON with timestamp, level, message, type, and binary name
@@ -224,27 +227,33 @@ utify.Critical("Oops!", opts)
 ### 📺 Output Functions (Print + Log)
 
 **General Status**
+
 - `Success(text, opts)`, `Error(text, opts)`, `Warning(text, opts)`
 - `Info(text, opts)`, `Debug(text, opts)`, `Critical(text, opts)`
 
 **Common Actions**
+
 - `Delete(text, opts)`, `Update(text, opts)`, `Install(text, opts)`
 - `Upgrade(text, opts)`, `Edit(text, opts)`, `New(text, opts)`
 
 **I/O Operations**
+
 - `Download(text, opts)`, `Upload(text, opts)`, `Sync(text, opts)`, `Search(text, opts)`
 
 ### 📝 Log-Only Functions (Log Only, No Terminal Output)
 
 **General Status**
+
 - `LogSuccess(text)`, `LogError(text)`, `LogWarning(text)`
 - `LogInfo(text)`, `LogDebug(text)`, `LogCritical(text)`
 
 **Common Actions**
+
 - `LogDelete(text)`, `LogUpdate(text)`, `LogInstall(text)`
 - `LogUpgrade(text)`, `LogEdit(text)`, `LogNew(text)`
 
 **I/O Operations**
+
 - `LogDownload(text)`, `LogUpload(text)`, `LogSync(text)`, `LogSearch(text)`
 
 ### 🔧 Get Functions (Return Values)
@@ -299,11 +308,13 @@ utify.ErrSilent
 ## 🧪 Testing
 
 **Run all tests:**
+
 ```bash
 make test
 ```
 
 **Run specific test suites:**
+
 ```bash
 make test-unit          # Unit tests only
 make test-integration   # Integration tests only
@@ -311,12 +322,14 @@ make bench              # Performance benchmarks
 ```
 
 **Coverage reports:**
+
 ```bash
 make coverage           # Text coverage report
 make coverage-html      # HTML coverage report
 ```
 
 **Other commands:**
+
 ```bash
 make build              # Build the project
 make lint               # Run linters (requires golangci-lint)
@@ -369,6 +382,7 @@ utify/
 Feel free to open issues, discuss features, or submit PRs! Let's make terminals beautiful, together.
 
 **Development:**
+
 1. Fork the repository
 2. Create a feature branch
 3. Add tests for new functionality
