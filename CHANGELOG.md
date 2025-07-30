@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.11] - 2025-07-30
+
+### 🧪 Testing
+
+- **Expanded coverage for `utify.go`**:
+  - Added **table-driven tests** for all formatted getter functions (`Get*f`), covering previously untested methods like `GetSearchf`, `GetUploadf`, etc.
+  - Added **table-driven tests** for all formatted log-only functions (`Log*f`), covering previously untested methods like `LogSearchf`, `LogUploadf`, etc.
+  - Introduced tests for **silent mode (`ErrSilent`)** to ensure correct behavior when output is suppressed.
+  - Added negative tests for **`SetLogTarget`** with invalid paths to validate error handling.
+- **Improved test modularity** by splitting new cases into separate blocks for clarity.
+- **Target coverage increase**: Pushed coverage for `utify.go` close to 100%.
+
 ## [1.4.10] - 2025-07-29
 
 ### 🧪 Testing
