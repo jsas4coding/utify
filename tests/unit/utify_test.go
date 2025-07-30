@@ -174,3 +174,64 @@ func TestConfigFunctions(t *testing.T) {
 		_ = utify.GetIconType()
 	})
 }
+
+func TestGetFormattedFunctions(t *testing.T) {
+	tests := []struct {
+		name string
+		fn   func(string, *utify.Options, ...any) (string, error)
+	}{
+		{"GetSuccessf", utify.GetSuccessf},
+		{"GetErrorf", utify.GetErrorf},
+		{"GetWarningf", utify.GetWarningf},
+		{"GetInfof", utify.GetInfof},
+		{"GetDebugf", utify.GetDebugf},
+		{"GetCriticalf", utify.GetCriticalf},
+		{"GetDeletef", utify.GetDeletef},
+		{"GetUpdatef", utify.GetUpdatef},
+		{"GetInstallf", utify.GetInstallf},
+		{"GetUpgradef", utify.GetUpgradef},
+		{"GetEditf", utify.GetEditf},
+		{"GetNewf", utify.GetNewf},
+		{"GetDownloadf", utify.GetDownloadf},
+		{"GetUploadf", utify.GetUploadf},
+		{"GetSyncf", utify.GetSyncf},
+		{"GetSearchf", utify.GetSearchf},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := tt.fn("Formatted %s", defaultOpts(), "message")
+			if err != nil && err != utify.ErrSilent {
+				t.Errorf("%s returned unexpected error: %v", tt.name, err)
+			}
+		})
+	}
+}
+
+func TestLogFormattedFunctions(t *testing.T) {
+	tests := []struct {
+		name string
+		fn   func(string, ...any)
+	}{
+		{"LogSuccessf", utify.LogSuccessf},
+		{"LogErrorf", utify.LogErrorf},
+		{"LogWarningf", utify.LogWarningf},
+		{"LogInfof", utify.LogInfof},
+		{"LogDebugf", utify.LogDebugf},
+		{"LogCriticalf", utify.LogCriticalf},
+		{"LogDeletef", utify.LogDeletef},
+		{"LogUpdatef", utify.LogUpdatef},
+		{"LogInstallf", utify.LogInstallf},
+		{"LogUpgradef", utify.LogUpgradef},
+		{"LogEditf", utify.LogEditf},
+		{"LogNewf", utify.LogNewf},
+		{"LogDownloadf", utify.LogDownloadf},
+		{"LogUploadf", utify.LogUploadf},
+		{"LogSyncf", utify.LogSyncf},
+		{"LogSearchf", utify.LogSearchf},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.fn("Formatted %s", "message")
+		})
+	}
+}
