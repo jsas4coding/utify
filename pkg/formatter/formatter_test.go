@@ -1,4 +1,4 @@
-package unit
+package formatter
 
 import (
 	"errors"
@@ -7,7 +7,6 @@ import (
 
 	testutil "github.com/jsas4coding/utify/internal/tests"
 	"github.com/jsas4coding/utify/pkg/colors"
-	"github.com/jsas4coding/utify/pkg/formatter"
 	"github.com/jsas4coding/utify/pkg/messages"
 	"github.com/jsas4coding/utify/pkg/options"
 )
@@ -31,15 +30,15 @@ func TestEcho(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output := testutil.CaptureOutput(func() {
-				_, _ = formatter.Echo(tt.msgType, tt.text, tt.opts)
+				_, _ = Echo(tt.msgType, tt.text, tt.opts)
 			})
 
 			if !strings.Contains(output, tt.text) {
 				t.Errorf("Expected output to contain %q, got %q", tt.text, output)
 			}
 
-			_, err := formatter.Echo(tt.msgType, tt.text, tt.opts)
-			if tt.shouldError && !errors.Is(err, formatter.ErrSilent) {
+			_, err := Echo(tt.msgType, tt.text, tt.opts)
+			if tt.shouldError && !errors.Is(err, ErrSilent) {
 				t.Errorf("Expected ErrSilent for %s, got %v", tt.name, err)
 			} else if !tt.shouldError && err != nil {
 				t.Errorf("Expected nil error for %s, got %v", tt.name, err)
@@ -52,7 +51,7 @@ func TestEchoBold(t *testing.T) {
 	opts := options.Default().WithBold()
 
 	output := testutil.CaptureOutput(func() {
-		_, _ = formatter.Echo(messages.Success, "Bold text", opts)
+		_, _ = Echo(messages.Success, "Bold text", opts)
 	})
 
 	if !strings.Contains(output, colors.Bold) {
@@ -64,7 +63,7 @@ func TestEchoItalic(t *testing.T) {
 	opts := options.Default().WithItalic()
 
 	output := testutil.CaptureOutput(func() {
-		_, _ = formatter.Echo(messages.Success, "Italic text", opts)
+		_, _ = Echo(messages.Success, "Italic text", opts)
 	})
 
 	if !strings.Contains(output, colors.Italic) {
@@ -76,7 +75,7 @@ func TestEchoNoColor(t *testing.T) {
 	opts := options.Default().WithoutColor()
 
 	output := testutil.CaptureOutput(func() {
-		_, _ = formatter.Echo(messages.Success, "Plain text", opts)
+		_, _ = Echo(messages.Success, "Plain text", opts)
 	})
 
 	if strings.Contains(output, colors.Green) {
@@ -88,7 +87,7 @@ func TestEchoNoStyle(t *testing.T) {
 	opts := options.Default().WithBold().WithItalic().WithoutStyle()
 
 	output := testutil.CaptureOutput(func() {
-		_, _ = formatter.Echo(messages.Success, "No style", opts)
+		_, _ = Echo(messages.Success, "No style", opts)
 	})
 
 	if strings.Contains(output, colors.Bold) || strings.Contains(output, colors.Italic) {
@@ -107,7 +106,7 @@ func TestEchoCallback(t *testing.T) {
 
 	opts := options.Default().WithCallback(callback)
 
-	_, _ = formatter.Echo(messages.Success, "Testing callback", opts)
+	_, _ = Echo(messages.Success, "Testing callback", opts)
 
 	if callbackType != messages.Success {
 		t.Errorf("Expected callback type to be %v, got %v", messages.Success, callbackType)
@@ -122,7 +121,7 @@ func TestEchoLogsToFile(t *testing.T) {
 	// This test just verifies that Echo calls the logger without errors
 	// The actual logging functionality is tested in logger_test.go
 	output := testutil.CaptureOutput(func() {
-		_, _ = formatter.Echo(messages.Success, "Log test", options.Default())
+		_, _ = Echo(messages.Success, "Log test", options.Default())
 	})
 
 	if !strings.Contains(output, "Log test") {

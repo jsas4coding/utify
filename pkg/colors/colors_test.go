@@ -1,22 +1,20 @@
-package unit
+package colors
 
 import (
 	"testing"
-
-	"github.com/jsas4coding/utify/pkg/colors"
 )
 
 func TestSetColorTable(t *testing.T) {
-	colors.ClearUserColors()
+	ClearUserColors()
 
 	customColors := map[string]string{
 		"success": "\033[95m", // Purple
 		"error":   "\033[96m", // Cyan
 	}
 
-	colors.SetColorTable(customColors)
+	SetColorTable(customColors)
 
-	color, exists := colors.GetUserColor("success")
+	color, exists := GetUserColor("success")
 	if !exists {
 		t.Error("Expected success color to exist in user colors")
 	}
@@ -24,7 +22,7 @@ func TestSetColorTable(t *testing.T) {
 		t.Errorf("Expected success color to be %q, got %q", "\033[95m", color)
 	}
 
-	color, exists = colors.GetUserColor("error")
+	color, exists = GetUserColor("error")
 	if !exists {
 		t.Error("Expected error color to exist in user colors")
 	}
@@ -34,19 +32,19 @@ func TestSetColorTable(t *testing.T) {
 }
 
 func TestGetUserColorNotExists(t *testing.T) {
-	colors.ClearUserColors()
+	ClearUserColors()
 
-	_, exists := colors.GetUserColor("nonexistent")
+	_, exists := GetUserColor("nonexistent")
 	if exists {
 		t.Error("Expected nonexistent color to not exist")
 	}
 }
 
 func TestClearUserColors(t *testing.T) {
-	colors.SetColorTable(map[string]string{"test": "value"})
-	colors.ClearUserColors()
+	SetColorTable(map[string]string{"test": "value"})
+	ClearUserColors()
 
-	_, exists := colors.GetUserColor("test")
+	_, exists := GetUserColor("test")
 	if exists {
 		t.Error("Expected user colors to be cleared")
 	}

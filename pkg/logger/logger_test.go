@@ -1,4 +1,4 @@
-package unit
+package logger
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/jsas4coding/utify/internal/tests"
-	"github.com/jsas4coding/utify/pkg/logger"
 	"github.com/jsas4coding/utify/pkg/messages"
 )
 
@@ -17,27 +16,27 @@ func TestSetLogTarget(t *testing.T) {
 	tempFile := filepath.Join(tests.DataDir, "test_utify.log")
 	defer func() { _ = os.Remove(tempFile) }()
 
-	err := logger.SetLogTarget(tempFile)
+	err := SetLogTarget(tempFile)
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	if logger.GetLogTarget() != tempFile {
-		t.Errorf("Expected log target %s, got %s", tempFile, logger.GetLogTarget())
+	if GetLogTarget() != tempFile {
+		t.Errorf("Expected log target %s, got %s", tempFile, GetLogTarget())
 	}
 }
 
 func TestLoggingEnabled(t *testing.T) {
-	original := logger.IsEnabled()
-	defer logger.SetEnabled(original)
+	original := IsEnabled()
+	defer SetEnabled(original)
 
-	logger.SetEnabled(false)
-	if logger.IsEnabled() {
+	SetEnabled(false)
+	if IsEnabled() {
 		t.Error("Expected logging to be disabled")
 	}
 
-	logger.SetEnabled(true)
-	if !logger.IsEnabled() {
+	SetEnabled(true)
+	if !IsEnabled() {
 		t.Error("Expected logging to be enabled")
 	}
 }
@@ -47,13 +46,13 @@ func TestLogMessage(t *testing.T) {
 	tempFile := filepath.Join(tests.DataDir, "test_utify_message.log")
 	defer func() { _ = os.Remove(tempFile) }()
 
-	err := logger.SetLogTarget(tempFile)
+	err := SetLogTarget(tempFile)
 	if err != nil {
 		t.Fatalf("Failed to set log target: %v", err)
 	}
 
-	logger.LogMessage(messages.Success, "Test message")
-	logger.Close()
+	LogMessage(messages.Success, "Test message")
+	Close()
 
 	content, err := os.ReadFile(tempFile)
 	if err != nil {
@@ -91,13 +90,13 @@ func TestLogOnly(t *testing.T) {
 	tempFile := filepath.Join(tests.DataDir, "test_utify_only.log")
 	defer func() { _ = os.Remove(tempFile) }()
 
-	err := logger.SetLogTarget(tempFile)
+	err := SetLogTarget(tempFile)
 	if err != nil {
 		t.Fatalf("Failed to set log target: %v", err)
 	}
 
-	logger.LogOnly(messages.Error, "Error only message")
-	logger.Close()
+	LogOnly(messages.Error, "Error only message")
+	Close()
 
 	content, err := os.ReadFile(tempFile)
 	if err != nil {
@@ -114,11 +113,11 @@ func TestLogFilePermissions(t *testing.T) {
 	tempFile := filepath.Join(tests.DataDir, "test_permissions.log")
 	defer func() { _ = os.Remove(tempFile) }()
 
-	err := logger.SetLogTarget(tempFile)
+	err := SetLogTarget(tempFile)
 	if err != nil {
 		t.Fatalf("Failed to set log target: %v", err)
 	}
-	logger.Close()
+	Close()
 
 	info, err := os.Stat(tempFile)
 	if err != nil {
@@ -133,8 +132,52 @@ func TestLogFilePermissions(t *testing.T) {
 func TestLogToInvalidTarget(t *testing.T) {
 	// Attempt to log to a directory that doesn't exist and we can't create
 	invalidTarget := "/nonexistent/dir/test.log"
-	err := logger.SetLogTarget(invalidTarget)
+	err := SetLogTarget(invalidTarget)
 	if err == nil {
 		t.Error("Expected an error when setting an invalid log target, but got nil")
+	}
+}
+
+func TestLogMessageWithDisabledLogging(t *testing.T) {
+	tests.CreateDataDir(t)
+	tempFile := filepath.Join(tests.DataDir, "test_disabled_logging.log")
+	defer func() { _ = os.Remove(tempFile) }()
+
+	err := SetLogTarget(tempFile)
+	if err != nil {
+		t.Fatalf("Failed to set log target: %v", err)
+	}
+
+	// Disable logging
+	SetEnabled(false)
+	defer SetEnabled(true)
+
+	LogMessage(messages.Success, "Disabled logging message")
+	Close()
+
+	content, err := os.ReadFile(tempFile)
+	if err != nil {
+		t.Fatalf("Failed to read log file: %v", err)
+	}
+
+	if strings.Contains(string(content), "Disabled logging message") {
+		t.Error("Disabled logging should not write to log file")
+	}
+}
+
+func TestGetBinaryName(t *testing.T) {
+	origArgs := os.Args
+	defer func() { os.Args = origArgs }()
+
+	os.Args = []string{"/path/to/some/binary"}
+	name := getBinaryName()
+	if name != "binary" {
+		t.Errorf("Expected binary name 'binary', got %q", name)
+	}
+
+	os.Args = []string{}
+	name = getBinaryName()
+	if name != "utify" {
+		t.Errorf("Expected fallback binary name 'utify', got %q", name)
 	}
 }
