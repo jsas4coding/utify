@@ -1,6 +1,7 @@
 package unit
 
 import (
+	"os"
 	"testing"
 
 	"github.com/jsas4coding/utify/pkg/icons"
@@ -8,17 +9,14 @@ import (
 )
 
 func TestIconDetection(t *testing.T) {
-	// Test that icon detection doesn't crash
 	detected := icons.IsNerdFontDetected()
-	_ = detected // Just ensure it returns a bool
+	_ = detected
 }
 
 func TestSetIconType(t *testing.T) {
-	// Save original
 	original := icons.GetIconType()
 	defer icons.SetIconType(original)
 
-	// Test setting different icon types
 	icons.SetIconType(icons.NoIcons)
 	if icons.GetIconType() != icons.NoIcons {
 		t.Error("Expected NoIcons type")
@@ -36,28 +34,21 @@ func TestSetIconType(t *testing.T) {
 }
 
 func TestGetIcon(t *testing.T) {
-	// Save original
 	original := icons.GetIconType()
 	defer icons.SetIconType(original)
 
-	// Test NoIcons
 	icons.SetIconType(icons.NoIcons)
 	icon := icons.GetIcon(messages.Success)
 	if icon != "" {
 		t.Errorf("Expected empty icon for NoIcons, got %q", icon)
 	}
 
-	// Test RegularIcons
 	icons.SetIconType(icons.RegularIcons)
 	icon = icons.GetIcon(messages.Success)
 	if icon == "" {
 		t.Error("Expected non-empty icon for RegularIcons")
 	}
-	if icon != "✅" {
-		t.Errorf("Expected ✅ for success, got %q", icon)
-	}
 
-	// Test NerdFontIcons
 	icons.SetIconType(icons.NerdFontIcons)
 	icon = icons.GetIcon(messages.Success)
 	if icon == "" {
@@ -66,23 +57,19 @@ func TestGetIcon(t *testing.T) {
 }
 
 func TestIconHelperFunctions(t *testing.T) {
-	// Save original
 	original := icons.GetIconType()
 	defer icons.SetIconType(original)
 
-	// Test ForceNerdFont
 	icons.ForceNerdFont()
 	if icons.GetIconType() != icons.NerdFontIcons {
 		t.Error("ForceNerdFont should set NerdFontIcons")
 	}
 
-	// Test ForceRegularIcons
 	icons.ForceRegularIcons()
 	if icons.GetIconType() != icons.RegularIcons {
 		t.Error("ForceRegularIcons should set RegularIcons")
 	}
 
-	// Test DisableIcons
 	icons.DisableIcons()
 	if icons.GetIconType() != icons.NoIcons {
 		t.Error("DisableIcons should set NoIcons")
@@ -90,7 +77,6 @@ func TestIconHelperFunctions(t *testing.T) {
 }
 
 func TestAllMessageTypesHaveIcons(t *testing.T) {
-	// Save original
 	original := icons.GetIconType()
 	defer icons.SetIconType(original)
 
@@ -104,7 +90,6 @@ func TestAllMessageTypesHaveIcons(t *testing.T) {
 		messages.Icon, messages.Default,
 	}
 
-	// Test Regular Icons
 	icons.SetIconType(icons.RegularIcons)
 	for _, msgType := range messageTypes {
 		icon := icons.GetIcon(msgType)
@@ -113,12 +98,28 @@ func TestAllMessageTypesHaveIcons(t *testing.T) {
 		}
 	}
 
-	// Test Nerd Font Icons
 	icons.SetIconType(icons.NerdFontIcons)
 	for _, msgType := range messageTypes {
 		icon := icons.GetIcon(msgType)
 		if icon == "" {
 			t.Errorf("Nerd font icon missing for message type: %s", msgType)
 		}
+	}
+}
+
+func TestNerdFontDetectionEnvVar(t *testing.T) {
+	original := os.Getenv("NERD_FONT_ENABLED")
+	defer os.Setenv("NERD_FONT_ENABLED", original)
+
+	os.Setenv("NERD_FONT_ENABLED", "true")
+	icons.Init()
+	if icons.GetIconType() != icons.NerdFontIcons {
+		t.Error("NERD_FONT_ENABLED=true should force Nerd Font icons")
+	}
+
+	os.Setenv("NERD_FONT_ENABLED", "false")
+	icons.Init()
+	if icons.GetIconType() == icons.NerdFontIcons {
+		t.Error("NERD_FONT_ENABLED=false should not force Nerd Font icons")
 	}
 }

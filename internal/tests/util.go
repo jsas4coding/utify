@@ -4,7 +4,17 @@ import (
 	"bytes"
 	"log"
 	"os"
+	
+	"testing"
 )
+
+const DataDir = "../../tests/data"
+
+func CreateDataDir(t *testing.T) {
+	if err := os.MkdirAll(DataDir, 0755); err != nil {
+		t.Fatalf("Failed to create test data directory: %v", err)
+	}
+}
 
 func CaptureOutput(f func()) string {
 	var buf bytes.Buffer

@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.4.12] - 2025-07-31
+
+### 🚀 Features
+
+- **Improved Test Suite**: Enhanced test coverage for the `icons` and `logger` packages, ensuring greater reliability and robustness.
+- **Test Artifacts Directory**: All files created during tests are now stored in the `tests/data` directory, keeping the project root clean.
+
+### 🔧 Fixes
+
+- **Stricter Log Target Handling**: The `SetLogTarget` function now returns an error if the specified log path is not writable, making its behavior more predictable.
+- **Improved Test Reliability**: Fixed an issue in the `TestNerdFontDetectionEnvVar` test by exposing the `icons.Init()` function, allowing the test to re-trigger icon detection after modifying environment variables.
+
+### 📚 Documentation
+
+- **Updated README.md**: The `README.md` file has been updated to include all the latest features, a new section explaining the example applications, and the "What's New" section has been moved to the beginning of the file for better visibility.
+- **Added SECURITY.md**: A `SECURITY.md` file has been added to the `.github` directory, providing clear guidelines for reporting security vulnerabilities.
+
 ## [1.4.11] - 2025-07-30
 
 ### 🧪 Testing
