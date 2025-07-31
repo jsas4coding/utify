@@ -45,11 +45,25 @@ jobs:
         run: go test -v -race -timeout=10m -coverpkg=./... ./tests/integration/...
       - name: Run benchmarks
         run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
-      - name: Fail if coverage is zero
+      - name: Fail if coverage is below 90%
         run: |
-          if [ $(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//') = 0 ]; then
-            echo "Coverage is 0% - failing." && exit 1
+          COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+          echo "Total coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 90" | bc -l) )); then
+            echo "Coverage below 90% - failing." && exit 1
           fi
+      - name: Generate coverage report (Markdown)
+        run: |
+          go tool cover -func=coverage.out | tee coverage_report.txt
+          echo "# Coverage Report" > coverage_report.md
+          echo '```' >> coverage_report.md
+          cat coverage_report.txt >> coverage_report.md
+          echo '```' >> coverage_report.md
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage_report.md
       - name: Upload coverage reports to Codecov
         if: github.ref == 'refs/heads/main'
         uses: codecov/codecov-action@v5
@@ -92,16 +106,32 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+
       - name: Get version
         id: get-version
         run: |
-          VERSION="${GITHUB_REF#refs/tags/}"
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          RAW_VERSION="${GITHUB_REF#refs/tags/}"     # e.g., v1.5.1
+          CLEAN_VERSION="${RAW_VERSION#v}"          # e.g., 1.5.1
+          echo "version=${RAW_VERSION}" >> $GITHUB_OUTPUT
+          echo "clean_version=${CLEAN_VERSION}" >> $GITHUB_OUTPUT
+
       - name: Validate tag format
         run: |
-          if ! [[ "${{ steps.get-version.outputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
-            echo "Invalid version format" && exit 1
+          if ! [[ "${{ steps.get-version.outputs.clean_version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+            echo "Invalid version format: ${{ steps.get-version.outputs.clean_version }}" && exit 1
           fi
+
+      - name: Validate changelog file
+        run: |
+          FILE="changelogs/${{ steps.get-version.outputs.clean_version }}.md"
+          if [ ! -f "$FILE" ]; then
+            echo "Changelog file $FILE not found for this version!" && exit 1
+          fi
+          if ! grep -q "(${FILE})" CHANGELOG.md; then
+            echo "Changelog file $FILE is missing from the main CHANGELOG.md index!" && exit 1
+          fi
+          cp "$FILE" RELEASE_BODY.md
+
       - name: Build all examples
         run: |
           mkdir -p dist/examples
@@ -109,11 +139,7 @@ jobs:
             name=$(basename "$dir")
             go build -o "dist/examples/$name" "$dir"
           done
-      - name: Extract changelog for release
-        id: changelog
-        run: |
-          VERSION="${GITHUB_REF#refs/tags/}"
-          awk '/## \['"${VERSION}"'\]/{flag=1; next} /^## /{flag=0} flag' CHANGELOG.md > RELEASE_BODY.md
+
       - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
