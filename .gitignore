@@ -81,6 +81,7 @@ e2e-sandbox/
 ############################################################################
 /.claude
 /CLAUDE.md
+/GEMINI.md
 /openai.json
 /openai.md
 /anthropic.json

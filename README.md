@@ -12,6 +12,33 @@
 
 ---
 
+## 🚀 What's New in v1.4.0
+
+- **Modular Architecture**: Complete restructure from single-file to organized packages
+- **Structured JSON Logging**: Automatic logging to configurable file targets
+- **Log-Only Functions**: New `Log*()` functions for logging without terminal output
+- **Icon System**: Smart icon support with Nerd Font detection and Unicode fallback
+- **Better Testing**: Comprehensive unit, integration, and benchmark tests
+- **Enhanced Examples**: Organized examples with dedicated demos
+- **Improved Documentation**: Updated with new features and architecture
+
+---
+
+## 🌟 Features
+
+- **🎨 Styled Terminal Output**: Easily print messages with predefined styles for success, error, warning, info, and more.
+- **📝 Structured JSON Logging**: Automatically log all messages to a configurable file in a structured JSON format, including timestamp, level, and message.
+- **🔧 Customizable Options**: Fine-tune the output with options for bold/italic text, color control, and icon visibility.
+- **🎯 Smart Icon System**: Automatically detects Nerd Font support in the terminal and provides Unicode emoji fallbacks.
+- **🎣 Extensible Callbacks**: Hook into message events to trigger custom logic, such as metrics or notifications.
+- **⛓️ Fluent API**: Chain methods together for a readable and expressive configuration.
+- **🤫 Silent Error Handling**: Error-type messages return a special `utify.ErrSilent` to avoid disrupting program flow.
+- **✍️ Formatted Output**: All message functions have a formatted version (e.g., `Successf`) for easy string interpolation.
+- **📝 Log-Only Functions**: Log messages without printing them to the terminal.
+- **📦 Predefined Message Types**: A wide range of predefined message types for common actions (e.g., `Install`, `Delete`, `Update`).
+
+---
+
 ## 📦 Installation
 
 ```sh
@@ -222,6 +249,25 @@ utify.Critical("Oops!", opts)
 
 ---
 
+## 📖 Examples
+
+The `examples/` directory contains a set of applications that demonstrate how to use the various features of Utify.
+
+- **`basic`**: A simple application that shows how to use the basic message functions.
+- **`colors`**: A demonstration of how to customize the color scheme.
+- **`icons`**: An example of how to use the icon system, including forcing different icon types.
+- **`callbacks`**: A demonstration of how to use callbacks to hook into message events.
+- **`logging-demo`**: An application that shows how to use the logging features, including setting a custom log target.
+
+To run an example, navigate to its directory and use `go run`:
+
+```sh
+cd examples/basic
+go run main.go
+```
+
+---
+
 ## 🧹 Available Methods
 
 ### 📺 Output Functions (Print + Log)
@@ -367,16 +413,6 @@ utify/
     └── benchmarks/       # Performance tests
 ```
 
-## 🚀 What's New in v1.4.0
-
-- **Modular Architecture**: Complete restructure from single-file to organized packages
-- **Structured JSON Logging**: Automatic logging to configurable file targets
-- **Log-Only Functions**: New `Log*()` functions for logging without terminal output
-- **Icon System**: Smart icon support with Nerd Font detection and Unicode fallback
-- **Better Testing**: Comprehensive unit, integration, and benchmark tests
-- **Enhanced Examples**: Organized examples with dedicated demos
-- **Improved Documentation**: Updated with new features and architecture
-
 ## 🤝 Contributing
 
 Feel free to open issues, discuss features, or submit PRs! Let's make terminals beautiful, together.
@@ -388,3 +424,5 @@ Feel free to open issues, discuss features, or submit PRs! Let's make terminals 
 3. Add tests for new functionality
 4. Run `make test` and `make docs` to ensure quality
 5. Submit a pull request
+
+```

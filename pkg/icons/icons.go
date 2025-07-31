@@ -80,6 +80,11 @@ var currentIconType IconType
 var detectedNerdFont bool
 
 func init() {
+	Init()
+}
+
+// Init re-initializes the icon detection logic. This is useful for testing.
+func Init() {
 	detectedNerdFont = detectNerdFont()
 	// Check if user explicitly wants Nerd Font icons
 	if os.Getenv("NERD_FONT_ENABLED") == "true" || os.Getenv("NERD_FONT_ENABLED") == "1" {

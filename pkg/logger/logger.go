@@ -30,6 +30,7 @@ var (
 
 func init() {
 	binaryName = getBinaryName()
+	// Set a default log target, which is resilient
 	logTarget = fmt.Sprintf("/var/log/%s.log", binaryName)
 	initLogger()
 }
@@ -41,6 +42,7 @@ func getBinaryName() string {
 	return "utify"
 }
 
+// initLogger provides a resilient startup logging mechanism.
 func initLogger() {
 	if !enabled {
 		return
@@ -62,6 +64,8 @@ func initLogger() {
 		if err != nil {
 			// If we still can't open a log file, disable logging
 			enabled = false
+			logFile = nil
+			logger = nil
 			return
 		}
 		logTarget = fallbackTarget
@@ -70,17 +74,33 @@ func initLogger() {
 	logger = log.New(logFile, "", 0)
 }
 
+// SetLogTarget sets a new log file target. This is a strict function;
+// if the target is not writable, it will return an error.
 func SetLogTarget(target string) error {
 	if logFile != nil {
-		_ = logFile.Close() // Ignore error on close during reset
+		_ = logFile.Close()
+		logFile = nil
+		logger = nil
 	}
 
+	logDir := filepath.Dir(target)
+	if err := os.MkdirAll(logDir, 0755); err != nil {
+		enabled = false
+		return fmt.Errorf("failed to create log directory for target '%s': %w", target, err)
+	}
+
+	newFile, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		enabled = false
+		// Attempt to restore default logger on failure
+		initLogger()
+		return fmt.Errorf("failed to set new log target '%s': %w", target, err)
+	}
+
+	logFile = newFile
+	logger = log.New(logFile, "", 0)
 	logTarget = target
-	initLogger()
-
-	if !enabled {
-		return fmt.Errorf("failed to initialize logger with target: %s", target)
-	}
+	enabled = true
 
 	return nil
 }
@@ -92,7 +112,7 @@ func GetLogTarget() string {
 func SetEnabled(enable bool) {
 	enabled = enable
 	if !enabled && logFile != nil {
-		_ = logFile.Close() // Ignore error on close during disable
+		_ = logFile.Close()
 		logFile = nil
 		logger = nil
 	} else if enabled && logFile == nil {
@@ -119,7 +139,6 @@ func LogMessage(msgType messages.Type, message string) {
 
 	jsonData, err := json.Marshal(entry)
 	if err != nil {
-		// Fallback to simple format if JSON fails
 		logger.Printf("[%s] %s", entry.Level, message)
 		return
 	}
@@ -133,7 +152,7 @@ func LogOnly(msgType messages.Type, message string) {
 
 func Close() {
 	if logFile != nil {
-		_ = logFile.Close() // Ignore error on final close
+		_ = logFile.Close()
 		logFile = nil
 		logger = nil
 	}
