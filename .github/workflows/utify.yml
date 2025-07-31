@@ -39,13 +39,11 @@ jobs:
           else
             git diff --exit-code go.mod
           fi
-      - name: Run tests with full coverage (excluding examples and tests)
+      - name: Run tests with full coverage (unit + integration)
         run: |
-          PKGS=$(go list ./... | grep -vE '/examples|/tests')
+          PKGS=$(go list ./... | grep -vE '/examples')
           echo "Packages for coverage:" $PKGS
-          go test -v -race -timeout=5m -coverpkg=$(echo $PKGS | paste -sd, -) -coverprofile=coverage.out $PKGS
-      - name: Run integration tests
-        run: go test -v -race -timeout=10m ./tests/integration/...
+          go test -v -race -timeout=10m -coverpkg=$(echo $PKGS | paste -sd, -) -coverprofile=coverage.out ./tests/unit/... ./tests/integration/...
       - name: Run benchmarks
         run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
       - name: Fail if coverage is below 90%
@@ -179,3 +177,4 @@ jobs:
           GOPROXY=proxy.golang.org go list -m github.com/jsas4coding/utify@${VERSION}
       - name: Confirm publication
         run: echo "Release ${{ needs.release.outputs.version }} published successfully!"
+
