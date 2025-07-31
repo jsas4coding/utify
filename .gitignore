@@ -94,3 +94,5 @@ e2e-sandbox/
 *.out
 coverage.html
 *coverage.html
+
+# No specific changes needed for examples

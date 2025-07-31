@@ -41,9 +41,9 @@ jobs:
           fi
       - name: Run tests with full coverage (all packages + tests)
         run: |
-          PKGS=$(go list ./... | grep -vE '/examples')
+          PKGS=$(go list ./pkg/... ./internal/... | grep -vE '/examples')
           echo "Packages for coverage:" $PKGS
-          go test -v -race -timeout=10m -coverpkg=$(echo $PKGS | paste -sd, -) -coverprofile=coverage.out $PKGS ./tests/unit/... ./tests/integration/...
+          go test -v -race -timeout=10m -coverpkg=$(echo $PKGS | paste -sd, -) -coverprofile=coverage.out ./pkg/... ./internal/... ./tests/...
       - name: Run benchmarks
         run: go test -bench=. -benchtime=5s ./tests/benchmarks/...
       - name: Fail if coverage is below 90%

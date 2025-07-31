@@ -1,28 +1,27 @@
-package unit
+package messages
 
 import (
 	"testing"
 
 	"github.com/jsas4coding/utify/pkg/colors"
-	"github.com/jsas4coding/utify/pkg/messages"
 )
 
 func TestGetColor(t *testing.T) {
 	tests := []struct {
 		name     string
-		msgType  messages.Type
+		msgType  Type
 		expected string
 	}{
-		{"Success", messages.Success, colors.Green},
-		{"Error", messages.Error, colors.Red},
-		{"Warning", messages.Warning, colors.Yellow},
-		{"Info", messages.Info, colors.Cyan},
-		{"Debug", messages.Debug, colors.Gray},
+		{"Success", Success, colors.Green},
+		{"Error", Error, colors.Red},
+		{"Warning", Warning, colors.Yellow},
+		{"Info", Info, colors.Cyan},
+		{"Debug", Debug, colors.Gray},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			color := messages.GetColor(tt.msgType)
+			color := GetColor(tt.msgType)
 			if color != tt.expected {
 				t.Errorf("Expected color %q for %s, got %q", tt.expected, tt.msgType, color)
 			}
@@ -33,20 +32,20 @@ func TestGetColor(t *testing.T) {
 func TestIsErrorType(t *testing.T) {
 	tests := []struct {
 		name    string
-		msgType messages.Type
+		msgType Type
 		isError bool
 	}{
-		{"Error", messages.Error, true},
-		{"Critical", messages.Critical, true},
-		{"Debug", messages.Debug, true},
-		{"Success", messages.Success, false},
-		{"Warning", messages.Warning, false},
-		{"Info", messages.Info, false},
+		{"Error", Error, true},
+		{"Critical", Critical, true},
+		{"Debug", Debug, true},
+		{"Success", Success, false},
+		{"Warning", Warning, false},
+		{"Info", Info, false},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := messages.IsErrorType(tt.msgType)
+			result := IsErrorType(tt.msgType)
 			if result != tt.isError {
 				t.Errorf("Expected IsErrorType(%s) to be %v, got %v", tt.msgType, tt.isError, result)
 			}
@@ -58,10 +57,10 @@ func TestGetColorWithUserOverride(t *testing.T) {
 	colors.ClearUserColors()
 	customColor := "\033[95m"
 	colors.SetColorTable(map[string]string{
-		string(messages.Success): customColor,
+		string(Success): customColor,
 	})
 
-	color := messages.GetColor(messages.Success)
+	color := GetColor(Success)
 	if color != customColor {
 		t.Errorf("Expected custom color %q for success, got %q", customColor, color)
 	}

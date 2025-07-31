@@ -32,12 +32,12 @@ run: build
 # Run tests with verbose output
 test:
 	@echo "🧪 Running tests..."
-	@go test -v ./tests/...
+	@go test -v ./tests/... ./pkg/... ./internal/...
 
 # Run unit tests only
 test-unit:
 	@echo "🧪 Running unit tests..."
-	@go test -v ./tests/unit/...
+	@go test -v ./pkg/*/tests.go ./pkg/*/tests/*.go
 
 # Run integration tests only
 test-integration:
@@ -52,13 +52,13 @@ bench:
 # Run tests with coverage and generate report
 coverage:
 	@echo "📊 Running tests with coverage..."
-	@go test -coverprofile=coverage.out ./tests/...
+	@go test -coverprofile=coverage.out ./tests/... ./pkg/... ./internal/... -cover -coverpkg=./pkg/...,./internal/...
 	@go tool cover -func=coverage.out
 
 # Generate HTML coverage report
 coverage-html:
 	@echo "📊 Generating HTML coverage report..."
-	@go test -coverprofile=coverage.out ./tests/...
+	@go test -coverprofile=coverage.out ./tests/... ./pkg/... ./internal/... -cover -coverpkg=./pkg/...,./internal/...
 	@go tool cover -html=coverage.out -o coverage.html
 	@echo "✅ Coverage report generated: coverage.html"
 

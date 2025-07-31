@@ -1,14 +1,13 @@
-package unit
+package options
 
 import (
 	"testing"
 
 	"github.com/jsas4coding/utify/pkg/messages"
-	"github.com/jsas4coding/utify/pkg/options"
 )
 
 func TestOptionsDefault(t *testing.T) {
-	opts := options.Default()
+	opts := Default()
 
 	if opts.Bold || opts.Italic || opts.NoColor || opts.NoIcon || opts.NoStyle || opts.Exit {
 		t.Error("Default options should have all flags set to false")
@@ -20,7 +19,7 @@ func TestOptionsDefault(t *testing.T) {
 }
 
 func TestWithBold(t *testing.T) {
-	opts := options.Default().WithBold()
+	opts := Default().WithBold()
 
 	if !opts.Bold {
 		t.Error("WithBold should set Bold to true")
@@ -28,7 +27,7 @@ func TestWithBold(t *testing.T) {
 }
 
 func TestWithItalic(t *testing.T) {
-	opts := options.Default().WithItalic()
+	opts := Default().WithItalic()
 
 	if !opts.Italic {
 		t.Error("WithItalic should set Italic to true")
@@ -36,7 +35,7 @@ func TestWithItalic(t *testing.T) {
 }
 
 func TestWithoutColor(t *testing.T) {
-	opts := options.Default().WithoutColor()
+	opts := Default().WithoutColor()
 
 	if !opts.NoColor {
 		t.Error("WithoutColor should set NoColor to true")
@@ -44,7 +43,7 @@ func TestWithoutColor(t *testing.T) {
 }
 
 func TestWithoutStyle(t *testing.T) {
-	opts := options.Default().WithoutStyle()
+	opts := Default().WithoutStyle()
 
 	if !opts.NoStyle {
 		t.Error("WithoutStyle should set NoStyle to true")
@@ -52,7 +51,7 @@ func TestWithoutStyle(t *testing.T) {
 }
 
 func TestWithExit(t *testing.T) {
-	opts := options.Default().WithExit()
+	opts := Default().WithExit()
 
 	if !opts.Exit {
 		t.Error("WithExit should set Exit to true")
@@ -69,7 +68,7 @@ func TestWithCallback(t *testing.T) {
 		called = true
 	}
 
-	opts := options.Default().WithCallback(callback)
+	opts := Default().WithCallback(callback)
 
 	if opts.Callback == nil {
 		t.Error("WithCallback should set callback function")
@@ -89,7 +88,7 @@ func TestWithCallback(t *testing.T) {
 func TestExitDisablesCallback(t *testing.T) {
 	callback := func(_ messages.Type, _ string) {}
 
-	opts := options.Default().WithCallback(callback).WithExit()
+	opts := Default().WithCallback(callback).WithExit()
 
 	if opts.Callback != nil {
 		t.Error("WithExit should disable callback")
@@ -103,7 +102,7 @@ func TestExitDisablesCallback(t *testing.T) {
 func TestCallbackDisablesExit(t *testing.T) {
 	callback := func(_ messages.Type, _ string) {}
 
-	opts := options.Default().WithExit().WithCallback(callback)
+	opts := Default().WithExit().WithCallback(callback)
 
 	if opts.Exit {
 		t.Error("WithCallback should disable exit")
@@ -111,5 +110,29 @@ func TestCallbackDisablesExit(t *testing.T) {
 
 	if opts.Callback == nil {
 		t.Error("WithCallback should enable callback")
+	}
+}
+
+func TestWithIcon(t *testing.T) {
+	opts := Default().WithIcon()
+
+	if !opts.ShowIcons {
+		t.Error("WithIcon should set ShowIcons to true")
+	}
+
+	if opts.NoIcon {
+		t.Error("WithIcon should set NoIcon to false")
+	}
+}
+
+func TestWithoutIcon(t *testing.T) {
+	opts := Default().WithoutIcon()
+
+	if opts.ShowIcons {
+		t.Error("WithoutIcon should set ShowIcons to false")
+	}
+
+	if !opts.NoIcon {
+		t.Error("WithoutIcon should set NoIcon to true")
 	}
 }
